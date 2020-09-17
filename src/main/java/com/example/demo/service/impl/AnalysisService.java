@@ -6,8 +6,11 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import javax.xml.ws.ServiceMode;
 import java.io.FileNotFoundException;
@@ -16,15 +19,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
- * @Author：huang
+ * @Author：dong
  * @Description：excel文件解析类
  */
 @Service
 public class AnalysisService {
-
-//    public AnalysisService() {
-//        throw new Error("工具类不允许实例化！");
-//    }
 
     /**
      * 获取并解析excel文件，返回一个二维集合
@@ -58,10 +57,11 @@ public class AnalysisService {
                 ArrayList<String> cell = new ArrayList<>();
                 for (int j = 0; j < sheetRow.getPhysicalNumberOfCells(); j++) {
                     //将每一个单元格的值装入列集合
-                    cell.add(sheetRow.getCell(j).getStringCellValue());
+                    cell.add(sheetRow.getCell(j).toString());
                 }
                 //将装有每一列的集合装入大集合
                 Student student = listToStudent(cell);
+                row.add(student);
 
                 //关闭资源
                 workbook.close();
@@ -100,5 +100,17 @@ public class AnalysisService {
         student.setArea(list.get(5).toString());
 
         return student;
+    }
+
+    @Bean(name = "multipartResolver")
+    public MultipartResolver multipartResolver() {
+        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+        resolver.setDefaultEncoding("UTF-8");
+        // resolveLazily属性启用是为了推迟文件解析，以在在UploadAction中捕获文件大小异常
+        resolver.setResolveLazily(true);
+        resolver.setMaxInMemorySize(40960);
+        // 上传文件大小 5G
+        resolver.setMaxUploadSize(5 * 1024 * 1024 * 1024);
+        return resolver;
     }
 }
