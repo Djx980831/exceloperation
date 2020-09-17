@@ -75,7 +75,12 @@
     <select id="findAllUser" resultType="com.example.entity.User">
         select * from User
     </select>-->
-    <insert id="addStudent" parameterType="com.example.demo.entity.Student">
-        insert into student values()
+
+    <insert id="addStudent" parameterType="java.util.List">
+        insert into student(studentId, studentName, sex, grade, gradeClass, area) values
+        <foreach collection="list" item="student" separator="," close=";">
+            (#{student.studentId}, #{student.studentName}, #{student.sex}, #{student.grade}, #{student.gradeClass}, #{student.area})
+        </foreach>
     </insert>
+
 </mapper>
