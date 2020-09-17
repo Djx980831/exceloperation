@@ -22,9 +22,9 @@ import java.util.ArrayList;
 @Service
 public class AnalysisService {
 
-    public AnalysisService() {
-        throw new Error("工具类不允许实例化！");
-    }
+//    public AnalysisService() {
+//        throw new Error("工具类不允许实例化！");
+//    }
 
     /**
      * 获取并解析excel文件，返回一个二维集合
