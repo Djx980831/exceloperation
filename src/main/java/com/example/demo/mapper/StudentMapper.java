@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface StudentMapper {
 
-
+    public Integer addStudent(Student student);
 }
