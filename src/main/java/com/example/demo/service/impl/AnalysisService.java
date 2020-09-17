@@ -1,4 +1,4 @@
-package com.example.demo.util;
+package com.example.demo.service.impl;
 
 import com.example.demo.entity.Student;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -6,8 +6,10 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.xml.ws.ServiceMode;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,9 +19,10 @@ import java.util.ArrayList;
  * @Author：huang
  * @Description：excel文件解析类
  */
-public class Analysis {
+@Service
+public class AnalysisService {
 
-    public Analysis() {
+    public AnalysisService() {
         throw new Error("工具类不允许实例化！");
     }
 

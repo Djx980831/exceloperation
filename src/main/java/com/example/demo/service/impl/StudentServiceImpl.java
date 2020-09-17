@@ -1,37 +1,25 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.User;
-import com.example.demo.mapper.UserMapper;
-import com.example.demo.service.UserService;
-import io.swagger.models.auth.In;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.service.StudentService;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class StudentServiceImpl implements StudentService {
 
-    @Autowired
-    private UserMapper userMapper;
-
-    @Override
-    public User getUser(String id) {
-        return userMapper.getUser(Integer.valueOf(id));
+    @Bean(name = "multipartResolver")
+    public MultipartResolver multipartResolver() {
+        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+        resolver.setDefaultEncoding("UTF-8");
+        // resolveLazily属性启用是为了推迟文件解析，以在在UploadAction中捕获文件大小异常
+        resolver.setResolveLazily(true);
+        resolver.setMaxInMemorySize(40960);
+        // 上传文件大小 5G
+        resolver.setMaxUploadSize(5 * 1024 * 1024 * 1024);
+        return resolver;
     }
 
-    @Override
-    public List<User> getAllUser() {
-       return userMapper.getAllUser();
-    }
 
-    @Override
-    public Integer updateUserById(String id, String userName, String password, String realName) {
-        User user = new User();
-        user.setId(Integer.valueOf(id));
-        user.setPassword(password);
-        user.setRealName(realName);
-        user.setUserName(userName);
-        return userMapper.updateUserById(user);
-    }
 }

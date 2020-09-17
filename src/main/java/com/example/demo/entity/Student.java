@@ -3,10 +3,12 @@ package com.example.demo.entity;
 import lombok.Data;
 
 @Data
-public class User {
-    private Integer id;
-    private String userName;
-    private String password;
-    private String realName;
+public class Student {
+    private String studentId;
+    private String studentName;
+    private String sex;
+    private String grade;
+    private String gradeClass;
+    private String area;
 
 }

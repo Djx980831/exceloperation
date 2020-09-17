@@ -1,17 +1,13 @@
 package com.example.demo.mapper;
 
-import com.example.demo.entity.User;
+import com.example.demo.entity.Student;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface UserMapper {
+public interface StudentMapper {
 
-    User getUser(@Param("id") int id);
 
-    List<User> getAllUser();
-
-    Integer updateUserById(User user);
 }

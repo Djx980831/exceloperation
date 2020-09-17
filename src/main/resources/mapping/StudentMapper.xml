@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.demo.mapper.UserMapper">
+<mapper namespace="com.example.demo.mapper.StudentMapper">
 
-    <resultMap id="BaseResultMap" type="com.example.demo.entity.User">
+    <resultMap id="BaseResultMap" type="com.example.demo.entity.Student">
         <result column="id" jdbcType="INTEGER" property="id" />
         <result column="userName" jdbcType="VARCHAR" property="userName" />
         <result column="passWord" jdbcType="VARCHAR" property="passWord" />
         <result column="realName" jdbcType="VARCHAR" property="realName" />
     </resultMap>
 
-    <select id="getUser" resultType="com.example.demo.entity.User">
+    <select id="getUser" resultType="com.example.demo.entity.Student">
         select * from user where id = #{id}
     </select>
 
-    <select id="getAllUser" resultType="com.example.demo.entity.User">
+    <select id="getAllUser" resultType="com.example.demo.entity.Student">
         select * from user
     </select>
 
