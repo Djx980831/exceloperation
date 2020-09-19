@@ -1,7 +1,6 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.Student;
-import com.microsoft.schemas.office.visio.x2012.main.CellType;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -64,39 +63,39 @@ public class AnalysisService {
                 ArrayList<String> rowList = new ArrayList<>();
                 for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
                     //将每一个单元格的值装入列集合
-//                    cell.add(sheetRow.getCell(j).getStringCellValue());
-//                    sheetRow.getCell(j)
-                    Cell cell = row.getCell(j);
-                    String cellValue = "";
-                    if (null != cell) {
-                        // 以下是判断数据的类型
-                        switch (cell.getCellType()) {
-                            case HSSFCell.CELL_TYPE_NUMERIC: // 数字
-                                DecimalFormat df = new DecimalFormat("0");
-                                cellValue = df.format(cell.getNumericCellValue());
-                                break;
-                            case HSSFCell.CELL_TYPE_STRING: // 字符串
-                                cellValue = cell.getStringCellValue();
-                                break;
-                            case HSSFCell.CELL_TYPE_BOOLEAN: // Boolean
-                                cellValue = cell.getBooleanCellValue() + "";
-                                break;
-                            case HSSFCell.CELL_TYPE_FORMULA: // 公式
-                                cellValue = cell.getCellFormula() + "";
-                                break;
-                            case HSSFCell.CELL_TYPE_BLANK: // 空值
-                                cellValue = "";
-                                break;
-                            case HSSFCell.CELL_TYPE_ERROR: // 故障
-                                cellValue = "非法字符";
-                                break;
-                            default:
-                                cellValue = "未知类型";
-                                break;
-                        }
-                    }
+                    rowList.add(row.getCell(j).toString());
+                    row.getCell(j);
+//                    Cell cell = row.getCell(j);
+//                    String cellValue = "";
+//                    if (null != cell) {
+//                        // 以下是判断数据的类型
+//                        switch (cell.getCellType()) {
+//                            case HSSFCell.CELL_TYPE_NUMERIC: // 数字
+//                                DecimalFormat df = new DecimalFormat("0");
+//                                cellValue = df.format(cell.getNumericCellValue());
+//                                break;
+//                            case HSSFCell.CELL_TYPE_STRING: // 字符串
+//                                cellValue = cell.getStringCellValue();
+//                                break;
+//                            case HSSFCell.CELL_TYPE_BOOLEAN: // Boolean
+//                                cellValue = cell.getBooleanCellValue() + "";
+//                                break;
+//                            case HSSFCell.CELL_TYPE_FORMULA: // 公式
+//                                cellValue = cell.getCellFormula() + "";
+//                                break;
+//                            case HSSFCell.CELL_TYPE_BLANK: // 空值
+//                                cellValue = "";
+//                                break;
+//                            case HSSFCell.CELL_TYPE_ERROR: // 故障
+//                                cellValue = "非法字符";
+//                                break;
+//                            default:
+//                                cellValue = "未知类型";
+//                                break;
+//                        }
+//                    }
                 }
-
+                System.out.println(rowList);
                 //将装有每一列的集合装入大集合
                 Student student = listToStudent(rowList);
                 studentArrayList.add(student);
@@ -132,7 +131,7 @@ public class AnalysisService {
         Student student = new Student();
         student.setStudentId(list.get(0).toString());
         student.setStudentName(list.get(1).toString());
-        student.setSex(list.get(2).toString().trim() == "男" ? "M" : "F");
+        student.setSex(list.get(2).toString().trim().equals("男") ? "M" : "F");
         student.setGrade(list.get(3).toString());
         student.setGradeClass(list.get(4).toString());
         student.setArea(list.get(5).toString());
@@ -144,7 +143,7 @@ public class AnalysisService {
     public MultipartResolver multipartResolver() {
         CommonsMultipartResolver resolver = new CommonsMultipartResolver();
         resolver.setDefaultEncoding("UTF-8");
-        // resolveLazily属性启用是为了推迟文件解析，以在在UploadAction中捕获文件大小异常
+        // resolveLazily属性启用是为了推迟文件解析，以在UploadAction中捕获文件大小异常
         resolver.setResolveLazily(true);
         resolver.setMaxInMemorySize(40960);
         // 上传文件大小 5G
