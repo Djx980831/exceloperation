@@ -5,9 +5,11 @@ import com.example.demo.entity.GroupInfo;
 import com.example.demo.mapper.GroupBOMMapper;
 import com.example.demo.service.GroupBOMService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
+@Service
 public class GroupBOMServiceImpl implements GroupBOMService {
 
     @Autowired

@@ -94,7 +94,7 @@
     <insert id="addBOMInfo" parameterType="java.util.List">
         insert into bom values
         <foreach collection="list" item="bom" separator="," close=";">
-            (null, #{bom.bomId}, #{bom.somId})
+            (null, #{bom.bomId}, #{bom.sonId})
         </foreach>
     </insert>
 

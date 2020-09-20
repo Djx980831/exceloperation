@@ -1,9 +1,10 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.entity.Bom;
+import com.example.demo.entity.GroupInfo;
 import com.example.demo.entity.Student;
-import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -14,12 +15,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
-import javax.xml.ws.ServiceMode;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author：dong
@@ -127,6 +128,168 @@ public class AnalysisService {
         }
     }
 
+    public static ArrayList<ArrayList<GroupInfo>> analysisGroup(MultipartFile file) {
+        ArrayList<ArrayList<GroupInfo>> groupInfo = new ArrayList<>();
+        //获取文件名称
+        String fileName = file.getOriginalFilename();
+        System.out.println(fileName);
+
+        try {
+            //获取输入流
+            InputStream in = file.getInputStream();
+            //判断excel版本
+            Workbook workbook = null;
+            if (judegExcelEdition(fileName)) {
+                workbook = new XSSFWorkbook(in);
+            } else {
+                workbook = new HSSFWorkbook(in);
+            }
+
+            //获取第一张工作表
+            Sheet sheet = workbook.getSheetAt(0);
+            //从第二行开始获取
+            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+                //循环获取工作表的每一行
+                Row row = sheet.getRow(i);
+                if (null == row) {
+                    continue;
+                }
+                //循环获取每一列
+                ArrayList<String> rowList = new ArrayList<>();
+                for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                    //将每一个单元格的值装入列集合
+                    rowList.add(row.getCell(j).toString());
+                    row.getCell(j);
+//                    Cell cell = row.getCell(j);
+//                    String cellValue = "";
+//                    if (null != cell) {
+//                        // 以下是判断数据的类型
+//                        switch (cell.getCellType()) {
+//                            case HSSFCell.CELL_TYPE_NUMERIC: // 数字
+//                                DecimalFormat df = new DecimalFormat("0");
+//                                cellValue = df.format(cell.getNumericCellValue());
+//                                break;
+//                            case HSSFCell.CELL_TYPE_STRING: // 字符串
+//                                cellValue = cell.getStringCellValue();
+//                                break;
+//                            case HSSFCell.CELL_TYPE_BOOLEAN: // Boolean
+//                                cellValue = cell.getBooleanCellValue() + "";
+//                                break;
+//                            case HSSFCell.CELL_TYPE_FORMULA: // 公式
+//                                cellValue = cell.getCellFormula() + "";
+//                                break;
+//                            case HSSFCell.CELL_TYPE_BLANK: // 空值
+//                                cellValue = "";
+//                                break;
+//                            case HSSFCell.CELL_TYPE_ERROR: // 故障
+//                                cellValue = "非法字符";
+//                                break;
+//                            default:
+//                                cellValue = "未知类型";
+//                                break;
+//                        }
+//                    }
+                }
+                System.out.println(rowList);
+                ArrayList<GroupInfo> groupInfoArrayList = listToGroupInfoList(rowList);
+                //将装有每一列的集合装入大集合
+
+                groupInfo.add(groupInfoArrayList);
+                //关闭资源
+                workbook.close();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("===================未找到文件======================");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("===================上传失败======================");
+        }
+
+        return groupInfo;
+    }
+
+    public static ArrayList<ArrayList<Bom>> analysisBom(MultipartFile file) {
+        ArrayList<ArrayList<Bom>> bomInfo = new ArrayList<>();
+        //获取文件名称
+        String fileName = file.getOriginalFilename();
+        System.out.println(fileName);
+
+        try {
+            //获取输入流
+            InputStream in = file.getInputStream();
+            //判断excel版本
+            Workbook workbook = null;
+            if (judegExcelEdition(fileName)) {
+                workbook = new XSSFWorkbook(in);
+            } else {
+                workbook = new HSSFWorkbook(in);
+            }
+
+            //获取第一张工作表
+            Sheet sheet = workbook.getSheetAt(1);
+            //从第二行开始获取
+            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+                //循环获取工作表的每一行
+                Row row = sheet.getRow(i);
+                if (null == row) {
+                    continue;
+                }
+                //循环获取每一列
+                ArrayList<String> rowList = new ArrayList<>();
+                for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                    //将每一个单元格的值装入列集合
+                    rowList.add(row.getCell(j).toString());
+                    row.getCell(j);
+//                    Cell cell = row.getCell(j);
+//                    String cellValue = "";
+//                    if (null != cell) {
+//                        // 以下是判断数据的类型
+//                        switch (cell.getCellType()) {
+//                            case HSSFCell.CELL_TYPE_NUMERIC: // 数字
+//                                DecimalFormat df = new DecimalFormat("0");
+//                                cellValue = df.format(cell.getNumericCellValue());
+//                                break;
+//                            case HSSFCell.CELL_TYPE_STRING: // 字符串
+//                                cellValue = cell.getStringCellValue();
+//                                break;
+//                            case HSSFCell.CELL_TYPE_BOOLEAN: // Boolean
+//                                cellValue = cell.getBooleanCellValue() + "";
+//                                break;
+//                            case HSSFCell.CELL_TYPE_FORMULA: // 公式
+//                                cellValue = cell.getCellFormula() + "";
+//                                break;
+//                            case HSSFCell.CELL_TYPE_BLANK: // 空值
+//                                cellValue = "";
+//                                break;
+//                            case HSSFCell.CELL_TYPE_ERROR: // 故障
+//                                cellValue = "非法字符";
+//                                break;
+//                            default:
+//                                cellValue = "未知类型";
+//                                break;
+//                        }
+//                    }
+                }
+                System.out.println(rowList);
+                ArrayList<Bom> bomrrayList = listToBomList(rowList);
+                //将装有每一列的集合装入大集合
+
+                bomInfo.add(bomrrayList);
+                //关闭资源
+                workbook.close();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("===================未找到文件======================");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("===================上传失败======================");
+        }
+
+        return bomInfo;
+    }
+
     private static Student listToStudent(ArrayList list) {
         Student student = new Student();
         student.setStudentId(list.get(0).toString());
@@ -137,6 +300,38 @@ public class AnalysisService {
         student.setArea(list.get(5).toString());
 
         return student;
+    }
+
+    private static ArrayList<GroupInfo> listToGroupInfoList(ArrayList list) {
+        ArrayList<GroupInfo> info = new ArrayList<>();
+        String[] strings = list.get(1).toString().split(",");
+        if (null != strings) {
+            for (int i = 0; i < strings.length; i++) {
+                GroupInfo groupInfo = new GroupInfo();
+                groupInfo.setGroupId(list.get(0).toString());
+                groupInfo.setBomId(strings[i]);
+
+                info.add(groupInfo);
+            }
+        }
+
+        return info;
+    }
+
+    private static ArrayList<Bom> listToBomList(ArrayList list) {
+        ArrayList<Bom> info = new ArrayList<>();
+        String[] strings = list.get(1).toString().split(",");
+        if (strings != null) {
+            for (int i = 0; i < strings.length; i++) {
+                Bom bom = new Bom();
+                bom.setBomId(list.get(0).toString());
+                bom.setSonId(strings[i]);
+
+                info.add(bom);
+            }
+        }
+
+        return info;
     }
 
     @Bean(name = "multipartResolver")
@@ -150,4 +345,6 @@ public class AnalysisService {
         resolver.setMaxUploadSize(5 * 1024 * 1024 * 1024);
         return resolver;
     }
+
+
 }
