@@ -3,12 +3,15 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.Bom;
 import com.example.demo.entity.GroupInfo;
 import com.example.demo.entity.Student;
+import com.example.demo.mapper.GroupBOMMapper;
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 /**
  * @Author：dong
@@ -28,6 +31,41 @@ import java.util.List;
  */
 @Service
 public class AnalysisService {
+
+    @Autowired
+    private GroupBOMMapper groupBOMMapper;
+
+    public Boolean isCheckTrue(String groupId) {
+        ArrayList<String> bomIds = groupBOMMapper.getBomIdsByGroupId(groupId);
+        ArrayList<String> sonIds = groupBOMMapper.getSonIdsByBomId(bomIds.get(0));
+        ArrayList resultBomIds = groupBOMMapper.getBomIdsBySonIds(sonIds);
+        if (!isTrueOrFalse(bomIds, resultBomIds)) {
+            return false;
+        }
+        return true;
+    }
+
+    public HashMap<String, Boolean> chenkGroup(ArrayList<String> groupIds) {
+        HashMap<String, Boolean> result = new HashMap<>();
+        for (String id : groupIds) {
+            if (isCheckTrue(id)) {
+                result.put(id, true);
+            } else {
+                result.put(id, false);
+            }
+        }
+        return result;
+    }
+
+    private Boolean isTrueOrFalse(ArrayList<String> target, ArrayList<String> target1) {
+        for (String str : target) {
+            if (!target1.contains(str)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     /**
      * 获取并解析excel文件，返回一个二维集合
@@ -346,5 +384,70 @@ public class AnalysisService {
         return resolver;
     }
 
+    public static ArrayList<ArrayList<String>> getGroupAndBomList(MultipartFile file) {
+        ArrayList<ArrayList<String>> stringArrayList = new ArrayList<>();
+        //获取文件名称
+        String fileName = file.getOriginalFilename();
+        System.out.println(fileName);
 
+        try {
+            //获取输入流
+            InputStream in = file.getInputStream();
+            //判断excel版本
+            Workbook workbook = null;
+            if (judegExcelEdition(fileName)) {
+                workbook = new XSSFWorkbook(in);
+            } else {
+                workbook = new HSSFWorkbook(in);
+            }
+
+            //获取第一张工作表
+            for (int m = 0; m < 2; m++) {
+                ArrayList<String> strings = new ArrayList<>();
+                Sheet sheet = workbook.getSheetAt(m);
+                //从第二行开始获取
+                for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+                    //循环获取工作表的每一行
+                    Row row = sheet.getRow(i);
+                    if (null == row) {
+                        continue;
+                    }
+                    //循环获取每一列
+                    ArrayList<String> rowList = new ArrayList<>();
+                    for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                        //将每一个单元格的值装入列集合
+                        rowList.add(row.getCell(j).toString());
+                        row.getCell(j);
+                    }
+                    System.out.println(rowList);
+
+                    //将装有每一列的集合装入大集合
+                    if (getCount4List(rowList) != null) {
+                        strings.add(getCount4List(rowList));
+                    }
+
+                    //关闭资源
+                    workbook.close();
+                }
+                stringArrayList.add(strings);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("===================未找到文件======================");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("===================上传失败======================");
+        }
+
+        System.out.println("----------"+stringArrayList.get(0).size());
+        return stringArrayList;
+    }
+
+   private static String getCount4List(ArrayList<String> list) {
+        String[] strings = list.get(1).split(",");
+        if (strings.length != 1) {
+            return list.get(0);
+        }
+        return null;
+   }
 }

@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/groupBom")
@@ -21,6 +23,9 @@ public class GroupBOMController {
 
     @Autowired
     private GroupBOMService service;
+
+    @Autowired
+    private AnalysisService analysisService;
 
     @PostMapping("/addGroup")
     @ResponseBody
@@ -47,5 +52,15 @@ public class GroupBOMController {
             service.addBom(infos);
         }
         return RpcResponse.success("success");
+    }
+
+    @PostMapping("/chenkGroup")
+    public RpcResponse<HashMap<String, Boolean>> chenkGroup(MultipartFile file) {
+        if (null == file) {
+            return RpcResponse.error(new ErrorInfo(101, "未上传文件"));
+        }
+        ArrayList<ArrayList<String>> arrayLists = AnalysisService.getGroupAndBomList(file);
+        HashMap<String, Boolean> booleanHashMap = analysisService.chenkGroup(arrayLists.get(0));
+        return RpcResponse.success(booleanHashMap);
     }
 }

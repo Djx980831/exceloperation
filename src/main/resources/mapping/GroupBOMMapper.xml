@@ -98,4 +98,20 @@
         </foreach>
     </insert>
 
+    <select id="getBomIdsByGroupId" parameterType="string" resultType="java.lang.String">
+        select bomId from groupInfo where groupId = #{groupId}
+    </select>
+
+    <select id="getSonIdsByBomId" parameterType="string" resultType="java.lang.String">
+        select sonId from bom where bomId = #{bomId}
+    </select>
+
+    <select id="getBomIdsBySonIds" parameterType="string" resultType="java.lang.String">
+        select bomId from bom where sonId in
+        <foreach collection="list" open="(" close=")" item="sonIds" separator=",">
+            #{sonIds}
+        </foreach>
+    </select>
+
+
 </mapper>
