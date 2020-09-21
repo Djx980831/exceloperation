@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.CountryDataMapper">
+
+    <!--    <resultMap id="BaseResultMap" type="com.example.demo.entity.Student">-->
+    <!--        <result column="id" jdbcType="INTEGER" property="id" />-->
+    <!--        <result column="userName" jdbcType="VARCHAR" property="userName" />-->
+    <!--        <result column="passWord" jdbcType="VARCHAR" property="passWord" />-->
+    <!--        <result column="realName" jdbcType="VARCHAR" property="realName" />-->
+    <!--    </resultMap>-->
+
+    <!--    <select id="getUser" resultType="com.example.demo.entity.Student">-->
+    <!--        select * from user where id = #{id}-->
+    <!--    </select>-->
+
+    <!--    <select id="getAllUser" resultType="com.example.demo.entity.Student">-->
+    <!--        select * from user-->
+    <!--    </select>-->
+
+    <!--    <update id="updateUserById" parameterType="user">-->
+    <!--        update user-->
+    <!--        <trim prefix="set" prefixOverrides=",">-->
+    <!--            <if test="userName != null and userName != ''">-->
+    <!--                ,userName = #{userName}-->
+    <!--            </if>-->
+    <!--            <if test="password != null and password != ''">-->
+    <!--                ,password = #{password}-->
+    <!--            </if>-->
+    <!--            <if test="realName != null and realName !=''">-->
+    <!--                ,realName = #{realName}-->
+    <!--            </if>-->
+    <!--        </trim>-->
+    <!--        where id = #{id}-->
+    <!--    </update>-->
+
+    <!--<insert id="insert" parameterType="com.example.entity.User">
+        insert into User (userId, userName, phone,
+        sex)
+        values (#{userid,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},
+        #{sex,jdbcType=VARCHAR})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.example.entity.User">
+        insert into User
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userid != null">
+                userId,
+            </if>
+            <if test="username != null">
+                userName,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userid != null">
+                #{userid,jdbcType=INTEGER},
+            </if>
+            <if test="username != null">
+                #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                #{sex,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="findAllUser" resultType="com.example.entity.User">
+        select * from User
+    </select>-->
+
+
+    <!--    <insert id="addStudent" parameterType="java.util.List">-->
+    <!--        insert into student(studentId, studentName, sex, grade, gradeClass, area) values-->
+    <!--        <foreach collection="list" item="student" separator="," close=";">-->
+    <!--            (#{student.studentId}, #{student.studentName}, #{student.sex}, #{student.grade}, #{student.gradeClass}, #{student.area})-->
+    <!--        </foreach>-->
+    <!--    </insert>-->
+
+    <!--    <insert id="addGroupInfo" parameterType="java.util.List">-->
+    <!--        insert into groupInfo values-->
+    <!--        <foreach collection="list" item="grouping" separator="," close=";">-->
+    <!--            (null,  #{grouping.groupId}, #{grouping.bomId})-->
+    <!--        </foreach>-->
+    <!--    </insert>-->
+
+    <!--    <insert id="addBOMInfo" parameterType="java.util.List">-->
+    <!--        insert into bom values-->
+    <!--        <foreach collection="list" item="bom" separator="," close=";">-->
+    <!--            (null, #{bom.bomId}, #{bom.sonId})-->
+    <!--        </foreach>-->
+    <!--    </insert>-->
+
+    <!--    <select id="getBomIdsByGroupId" parameterType="string" resultType="java.lang.String">-->
+    <!--        select bomId from groupInfo where groupId = #{groupId}-->
+    <!--    </select>-->
+
+    <!--    <select id="getSonIdsByBomId" parameterType="string" resultType="java.lang.String">-->
+    <!--        select sonId from bom where bomId = #{bomId}-->
+    <!--    </select>-->
+
+    <insert id="addCountry" parameterType="java.util.List">
+        insert into country values
+        <foreach collection="list" item="country" separator="," close=";">
+            (null, "tclCountryClass", #{country.coun}, "6788B156F3160000148CBB5E56560D00", #{country.coun}, "6788B156F3160000148CBB5E56560D00",
+            "Classification", "Active", "eService Production", "admin_platform", #{country.yw}, "6788B1563B02000059DFC45EF5380400",
+            "admin_platform", null, 0, null, #{country.sx}, "N", null, null)
+        </foreach>
+    </insert>
+
+</mapper>

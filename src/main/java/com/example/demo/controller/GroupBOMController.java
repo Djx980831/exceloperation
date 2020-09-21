@@ -63,4 +63,15 @@ public class GroupBOMController {
         HashMap<String, Boolean> booleanHashMap = analysisService.chenkGroup(arrayLists.get(0));
         return RpcResponse.success(booleanHashMap);
     }
+
+    @PostMapping("/secondGroupCheck")
+    public RpcResponse<HashMap<String, Boolean>> secondGroupCheck(MultipartFile file) {
+        if (null == file) {
+            return RpcResponse.error(new ErrorInfo(101, "未上传文件"));
+        }
+        ArrayList<ArrayList<String>> arrayLists = AnalysisService.getGroupAndBomList(file);
+        HashMap<String, Boolean> booleanHashMap = analysisService.chenkGroup(arrayLists.get(0));
+        HashMap<String, Boolean> reselt = analysisService.secondGroupCheck(booleanHashMap);
+        return RpcResponse.success(reselt);
+    }
 }
