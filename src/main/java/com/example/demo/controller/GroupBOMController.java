@@ -73,4 +73,13 @@ public class GroupBOMController {
         HashMap<String, Boolean> reselt = analysisService.secondGroupCheck(booleanHashMap);
         return RpcResponse.success(reselt);
     }
+
+    @PostMapping("/checkSingleBomGroup")
+    public RpcResponse<HashMap<String, Boolean>> checkSingleBomGroup(MultipartFile file) {
+        if (null == file) {
+            return RpcResponse.error(new ErrorInfo(101, "未上传文件"));
+        }
+        HashMap<String, Boolean> result = analysisService.isNotSameGroup(analysisService.getGroupAndBomList(file));
+        return RpcResponse.success(result);
+    }
 }

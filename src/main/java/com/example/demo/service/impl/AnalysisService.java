@@ -5,7 +5,6 @@ import com.example.demo.entity.CountryData;
 import com.example.demo.entity.GroupInfo;
 import com.example.demo.entity.Student;
 import com.example.demo.mapper.GroupBOMMapper;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -22,8 +21,8 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 /**
@@ -481,9 +480,11 @@ public class AnalysisService {
             //获取第一张工作表
             for (int m = 0; m < 2; m++) {
                 ArrayList<String> strings = new ArrayList<>();
+                ArrayList<String> singleBomGroupList = new ArrayList<>();
+                ArrayList<String> allGroupList = new ArrayList<>();
                 Sheet sheet = workbook.getSheetAt(m);
                 //从第二行开始获取
-                for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+                for (int i = 0; i < sheet.getPhysicalNumberOfRows(); i++) {
                     //循环获取工作表的每一行
                     Row row = sheet.getRow(i);
                     if (null == row) {
@@ -500,12 +501,16 @@ public class AnalysisService {
                     //将装有每一列的集合装入大集合
                     if (getCount4List(rowList) != null) {
                         strings.add(getCount4List(rowList));
+                    } else {
+                        singleBomGroupList.add(rowList.get(0));
                     }
-
+                    allGroupList.add(rowList.get(0));
                     //关闭资源
                     workbook.close();
                 }
                 stringArrayList.add(strings);
+                stringArrayList.add(singleBomGroupList);
+                stringArrayList.add(allGroupList);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -516,6 +521,38 @@ public class AnalysisService {
         }
 
         return stringArrayList;
+    }
+
+    public HashMap<String, Boolean> isNotSameGroup(ArrayList<ArrayList<String>> list) {
+        ArrayList<String> groupIdList = list.get(2);
+        int length = groupIdList.size();
+        HashMap<String, Boolean> result = new HashMap<>();
+        HashMap<String, ArrayList<String>> groupAndSonIdsMap = new HashMap<>();
+        for (int i = 0; i < length; i++) {
+            ArrayList<String> bomIds = groupBOMMapper.getBomIdsByGroupId(groupIdList.get(i));
+            ArrayList<String> sonIds = groupBOMMapper.getSonIdsByBomIds(bomIds);
+            groupAndSonIdsMap.put(groupIdList.get(i), sonIds);
+        }
+        for (int i = 0; i < length; i++) {
+            Boolean flag = null;
+            for (int j = i + 1; j < length; j++) {
+                flag = bomGroupIsTrueOrFalse(groupAndSonIdsMap.get(i), groupAndSonIdsMap.get(j));
+            }
+            result.put(groupIdList.get(i), flag);
+        }
+
+        return result;
+    }
+
+    private boolean bomGroupIsTrueOrFalse(ArrayList<String> list1, ArrayList<String> list2) {
+        boolean flag = false;
+        for (String sonId : list1) {
+            if (list2.contains(sonId)) {
+                flag = true;
+                break;
+            }
+        }
+        return flag;
     }
 
     private static String getCount4List(ArrayList<String> list) {
