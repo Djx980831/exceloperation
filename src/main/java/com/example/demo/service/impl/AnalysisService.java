@@ -72,7 +72,6 @@ public class AnalysisService {
             } else {
                 result.put(id, false);
             }
-            System.out.println("-----------HashMap" + result);
         }
         return result;
     }
@@ -89,16 +88,18 @@ public class AnalysisService {
     public HashMap<String, Boolean> secondGroupCheck(HashMap<String, Boolean> hashMap) {
         HashMap<String, Boolean> result = new HashMap<>();
         Set<String> griupSet = getKeysByStream(hashMap, false);
-        ArrayList<String> sonIdsDone = new ArrayList<>(300);
         for (String gid : griupSet) {
+            ArrayList<String> sonIdsDone = new ArrayList<>(300);
             ArrayList<String> bomIds = groupBOMMapper.getBomIdsByGroupId(gid);
-            Boolean flag = false;
+            Boolean flag = null;
             for (int i = 0; i < bomIds.size(); i++) {
+                flag = false;
                 ArrayList<String> sonIds = groupBOMMapper.getSonIdsByBomId(bomIds.get(i));
                 if (sonIdsDone != null && sonIdsDone.size() > 0) {
                     for (int j = 0; j < sonIds.size(); j++) {
                         if (sonIdsDone.contains(sonIds.get(j))) {
                             flag = true;
+                            sonIdsDone.addAll(sonIds);
                             break;
                         }
                     }
@@ -110,6 +111,10 @@ public class AnalysisService {
                         flag = true;
                         break;
                     }
+                }
+                if (flag == false) {
+                    System.out.println("index:" + i + "-------" + bomIds.get(i));
+                    break;
                 }
             }
             result.put(gid, flag);
@@ -124,8 +129,7 @@ public class AnalysisService {
             if (i == index) {
                 continue;
             }
-            ArrayList<String> mid = new ArrayList<>(100);
-            mid = groupBOMMapper.getSonIdsByBomId(list.get(i));
+            ArrayList<String> mid = groupBOMMapper.getSonIdsByBomId(list.get(i));
             result.addAll(mid);
         }
         return result;
@@ -209,7 +213,6 @@ public class AnalysisService {
 //                        }
 //                    }
                 }
-                System.out.println(rowList);
                 //将装有每一列的集合装入大集合
                 Student student = listToStudent(rowList);
                 studentArrayList.add(student);
@@ -304,7 +307,6 @@ public class AnalysisService {
 //                        }
 //                    }
                 }
-                System.out.println(rowList);
                 ArrayList<GroupInfo> groupInfoArrayList = listToGroupInfoList(rowList);
                 //将装有每一列的集合装入大集合
 
@@ -385,7 +387,6 @@ public class AnalysisService {
 //                        }
 //                    }
                 }
-                System.out.println(rowList);
                 ArrayList<Bom> bomrrayList = listToBomList(rowList);
                 //将装有每一列的集合装入大集合
 
@@ -495,7 +496,6 @@ public class AnalysisService {
                         rowList.add(row.getCell(j).toString());
                         row.getCell(j);
                     }
-                    System.out.println(rowList);
 
                     //将装有每一列的集合装入大集合
                     if (getCount4List(rowList) != null) {
@@ -515,7 +515,6 @@ public class AnalysisService {
             System.out.println("===================上传失败======================");
         }
 
-        System.out.println("----------" + stringArrayList.get(0).size());
         return stringArrayList;
     }
 
@@ -560,7 +559,6 @@ public class AnalysisService {
                     rowList.add(row.getCell(j).toString());
                     row.getCell(j);
                 }
-                System.out.println(rowList);
                 //将装有每一列的集合装入大集合
                 CountryData data = listToCountryData(rowList);
                 countryDataArrayList.add(data);
