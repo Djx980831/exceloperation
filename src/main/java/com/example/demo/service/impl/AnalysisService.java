@@ -112,7 +112,7 @@ public class AnalysisService {
                     }
                 }
                 if (flag == false) {
-                    System.out.println("index:" + i + "-------" + bomIds.get(i));
+                    System.out.println("groupId:" + gid + "-------" + "index:" + i + "-------" + bomIds.get(i));
                     break;
                 }
             }
@@ -546,6 +546,9 @@ public class AnalysisService {
 
     private boolean bomGroupIsTrueOrFalse(ArrayList<String> list1, ArrayList<String> list2) {
         boolean flag = false;
+        if (list1 == null || list1.size() == 0 || list2 == null || list2.size() == 0) {
+            return false;
+        }
         for (String sonId : list1) {
             if (list2.contains(sonId)) {
                 flag = true;
