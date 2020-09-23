@@ -74,12 +74,21 @@ public class GroupBOMController {
         return RpcResponse.success(reselt);
     }
 
-    @PostMapping("/checkSingleBomGroup")
-    public RpcResponse<HashMap<String, Boolean>> checkSingleBomGroup(MultipartFile file) {
+    @PostMapping("/checkNotSameGroup")
+    public RpcResponse<HashMap<String, Boolean>> checkNotSameGroup(MultipartFile file) {
         if (null == file) {
             return RpcResponse.error(new ErrorInfo(101, "未上传文件"));
         }
         HashMap<String, Boolean> result = analysisService.isNotSameGroup(analysisService.getGroupAndBomList(file));
+        return RpcResponse.success(result);
+    }
+
+    @PostMapping("/checkInv")
+    public RpcResponse<ArrayList<String>> checkInv(MultipartFile file) {
+        if (null == file) {
+            return RpcResponse.error(new ErrorInfo(101, "未上传文件"));
+        }
+        ArrayList<String> result = analysisService.checkInv(analysisService.getInvAndItemsSet(file));
         return RpcResponse.success(result);
     }
 }

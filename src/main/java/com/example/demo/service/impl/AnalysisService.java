@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import checkers.units.quals.A;
 import com.example.demo.entity.Bom;
 import com.example.demo.entity.CountryData;
 import com.example.demo.entity.GroupInfo;
@@ -170,7 +171,7 @@ public class AnalysisService {
             //获取第一张工作表
             Sheet sheet = workbook.getSheetAt(0);
             //从第二行开始获取
-            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+            for (int i = 0; i < sheet.getPhysicalNumberOfRows(); i++) {
                 //循环获取工作表的每一行
                 Row row = sheet.getRow(i);
                 if (null == row) {
@@ -264,7 +265,7 @@ public class AnalysisService {
             //获取第一张工作表
             Sheet sheet = workbook.getSheetAt(0);
             //从第二行开始获取
-            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+            for (int i = 0; i < sheet.getPhysicalNumberOfRows(); i++) {
                 //循环获取工作表的每一行
                 Row row = sheet.getRow(i);
                 if (null == row) {
@@ -344,7 +345,7 @@ public class AnalysisService {
             //获取第一张工作表
             Sheet sheet = workbook.getSheetAt(1);
             //从第二行开始获取
-            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+            for (int i = 0; i < sheet.getPhysicalNumberOfRows(); i++) {
                 //循环获取工作表的每一行
                 Row row = sheet.getRow(i);
                 if (null == row) {
@@ -460,6 +461,7 @@ public class AnalysisService {
         return resolver;
     }
 
+    //测试不同组分组是否准确
     public static ArrayList<ArrayList<String>> getGroupAndBomList(MultipartFile file) {
         ArrayList<ArrayList<String>> stringArrayList = new ArrayList<>();
         //获取文件名称
@@ -523,6 +525,72 @@ public class AnalysisService {
         return stringArrayList;
     }
 
+    public static ArrayList<HashSet<String>> getInvAndItemsSet(MultipartFile file) {
+        ArrayList<HashSet<String>> stringArrayList = new ArrayList<>();
+        //获取文件名称
+        String fileName = file.getOriginalFilename();
+        System.out.println(fileName);
+
+        try {
+            //获取输入流
+            InputStream in = file.getInputStream();
+            //判断excel版本
+            Workbook workbook = null;
+            if (judegExcelEdition(fileName)) {
+                workbook = new XSSFWorkbook(in);
+            } else {
+                workbook = new HSSFWorkbook(in);
+            }
+
+            //获取第工作表
+            for (int m = 0; m < 2; m++) {
+                Sheet sheet = workbook.getSheetAt(m);
+                HashSet<String> rowSet = new HashSet<>();
+                //从第一行开始获取
+                for (int i = 0; i < sheet.getPhysicalNumberOfRows(); i++) {
+                    //循环获取工作表的每一行
+                    Row row = sheet.getRow(i);
+                    if (null == row) {
+                        System.out.println("---------" + i);
+                        continue;
+                    }
+                    //循环获取每一列
+                    for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                        //将每一个单元格的值装入列集合
+                        rowSet.add(row.getCell(j).toString());
+                        row.getCell(j);
+                    }
+
+                    //将装有每一列的集合装入大集合
+
+                    //关闭资源
+                    workbook.close();
+                }
+                stringArrayList.add(rowSet);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("===================未找到文件======================");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("===================上传失败======================");
+        }
+
+        return stringArrayList;
+    }
+
+    public ArrayList<String> checkInv(ArrayList<HashSet<String>> list) {
+        HashSet<String> invSet = list.get(0);
+        HashSet<String> itemsSet = list.get(1);
+        ArrayList<String> result = new ArrayList<>();
+        for (String str : itemsSet) {
+            if (!invSet.contains(str)) {
+                result.add(str);
+            }
+        }
+        return result;
+    }
+
     public HashMap<String, Boolean> isNotSameGroup(ArrayList<ArrayList<String>> list) {
         ArrayList<String> groupIdList = list.get(2);
         int length = groupIdList.size();
@@ -534,7 +602,7 @@ public class AnalysisService {
             groupAndSonIdsMap.put(groupIdList.get(i), sonIds);
         }
         for (int i = 0; i < length; i++) {
-            Boolean flag = null;
+            Boolean flag = false;
             for (int j = i + 1; j < length; j++) {
                 flag = bomGroupIsTrueOrFalse(groupAndSonIdsMap.get(i), groupAndSonIdsMap.get(j));
             }
