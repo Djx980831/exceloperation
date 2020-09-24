@@ -108,7 +108,13 @@ public class AnalysisService {
                 if (flag == true) {
                     break;
                 }
-                ArrayList<String> mid = getExceptOneBomId4SonIds(bomIds, i);
+                if (i == bomIds.size() - 1) {
+                    flag = false;
+                    errorBomIdsList.add(bomIds.get(i));
+                    System.out.println("groupId:" + gid + "-------" + "index:" + i + "-------" + bomIds.get(i));
+                    break;
+                }
+                ArrayList<String> mid = getAfterBomId4SonIds(bomIds, i);
                 for (String id : sonIds) {
                     if (mid.contains(id)) {
                         sonIdsDoneSet.addAll(sonIds);
@@ -133,12 +139,9 @@ public class AnalysisService {
         return finalResultList;
     }
 
-    private ArrayList<String> getExceptOneBomId4SonIds(ArrayList<String> list, int index) {
+    private ArrayList<String> getAfterBomId4SonIds(ArrayList<String> list, int index) {
         ArrayList<String> result = new ArrayList<>(200);
-        for (int i = 0; i < list.size(); i++) {
-            if (i == index) {
-                continue;
-            }
+        for (int i = index + 1; i < list.size(); i++) {
             ArrayList<String> mid = groupBOMMapper.getSonIdsByBomId(list.get(i));
             result.addAll(mid);
         }
