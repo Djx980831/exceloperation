@@ -1,10 +1,6 @@
 package com.example.demo.service.impl;
 
-import checkers.units.quals.A;
-import com.example.demo.entity.Bom;
-import com.example.demo.entity.CountryData;
-import com.example.demo.entity.GroupInfo;
-import com.example.demo.entity.Student;
+import com.example.demo.entity.*;
 import com.example.demo.mapper.GroupBOMMapper;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -22,7 +18,6 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -85,42 +80,56 @@ public class AnalysisService {
                 .collect(Collectors.toSet());
     }
 
-    public HashMap<String, Boolean> secondGroupCheck(HashMap<String, Boolean> hashMap) {
-        HashMap<String, Boolean> result = new HashMap<>();
-        Set<String> griupSet = getKeysByStream(hashMap, false);
-        for (String gid : griupSet) {
-            ArrayList<String> sonIdsDone = new ArrayList<>(300);
+    public ArrayList<FinalResult> secondGroupCheck(HashMap<String, Boolean> hashMap) {
+        ArrayList<FinalResult> finalResultList = new ArrayList<>();
+        Set<String> groupIdSet = getKeysByStream(hashMap, false);
+        for (String gid : groupIdSet) {
+//            if (!gid.equals("G1398")) {
+//                continue;
+//            }
+            FinalResult finalResult = new FinalResult();
+            HashSet<String> sonIdsDoneSet = new HashSet<>(64);
+            ArrayList<String> errorBomIdsList = new ArrayList<>();
             ArrayList<String> bomIds = groupBOMMapper.getBomIdsByGroupId(gid);
             Boolean flag = null;
             for (int i = 0; i < bomIds.size(); i++) {
                 flag = false;
                 ArrayList<String> sonIds = groupBOMMapper.getSonIdsByBomId(bomIds.get(i));
-                if (sonIdsDone != null && sonIdsDone.size() > 0) {
+                if (sonIdsDoneSet != null && sonIdsDoneSet.size() > 0) {
                     for (int j = 0; j < sonIds.size(); j++) {
-                        if (sonIdsDone.contains(sonIds.get(j))) {
+                        if (sonIdsDoneSet.contains(sonIds.get(j))) {
                             flag = true;
-                            sonIdsDone.addAll(sonIds);
+                            sonIdsDoneSet.addAll(sonIds);
                             break;
                         }
                     }
                 }
+                if (flag == true) {
+                    break;
+                }
                 ArrayList<String> mid = getExceptOneBomId4SonIds(bomIds, i);
                 for (String id : sonIds) {
                     if (mid.contains(id)) {
-                        sonIdsDone.addAll(sonIds);
+                        sonIdsDoneSet.addAll(sonIds);
                         flag = true;
                         break;
                     }
                 }
                 if (flag == false) {
+                    errorBomIdsList.add(bomIds.get(i));
                     System.out.println("groupId:" + gid + "-------" + "index:" + i + "-------" + bomIds.get(i));
-                    break;
+                    //break;
                 }
             }
-            result.put(gid, flag);
+
+            finalResult.setGid(gid);
+            finalResult.setErrorList(errorBomIdsList);
+            finalResult.setFlag((errorBomIdsList == null || errorBomIdsList.size() == 0) ? true : false);
+
+            finalResultList.add(finalResult);
         }
 
-        return result;
+        return finalResultList;
     }
 
     private ArrayList<String> getExceptOneBomId4SonIds(ArrayList<String> list, int index) {

@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.CountryData;
-import com.example.demo.entity.GroupInfo;
 import com.example.demo.service.CountryDataService;
 import com.example.demo.service.impl.AnalysisService;
 import com.example.demo.util.ErrorInfo;

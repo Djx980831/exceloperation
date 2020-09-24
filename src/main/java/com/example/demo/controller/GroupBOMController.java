@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.Bom;
+import com.example.demo.entity.FinalResult;
 import com.example.demo.entity.GroupInfo;
 import com.example.demo.service.GroupBOMService;
 import com.example.demo.service.impl.AnalysisService;
@@ -64,14 +65,14 @@ public class GroupBOMController {
     }
 
     @PostMapping("/secondGroupCheck")
-    public RpcResponse<HashMap<String, Boolean>> secondGroupCheck(MultipartFile file) {
+    public RpcResponse<ArrayList<FinalResult>> secondGroupCheck(MultipartFile file) {
         if (null == file) {
             return RpcResponse.error(new ErrorInfo(101, "未上传文件"));
         }
         ArrayList<ArrayList<String>> arrayLists = AnalysisService.getGroupAndBomList(file);
         HashMap<String, Boolean> booleanHashMap = analysisService.chenkGroup(arrayLists.get(0));
-        HashMap<String, Boolean> reselt = analysisService.secondGroupCheck(booleanHashMap);
-        return RpcResponse.success(reselt);
+        ArrayList<FinalResult> result = analysisService.secondGroupCheck(booleanHashMap);
+        return RpcResponse.success(result);
     }
 
     @PostMapping("/checkNotSameGroup")
