@@ -8,5 +8,5 @@ import java.util.ArrayList;
 public class FinalResult {
     private String gid;
     private Boolean flag;
-    private ArrayList<String> errorList;
+    private ArrayList<String> errorBomIdList;
 }

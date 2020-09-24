@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.entity.*;
 import com.example.demo.mapper.GroupBOMMapper;
+import com.example.demo.vo.response.FinalResult;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -123,7 +124,7 @@ public class AnalysisService {
             }
 
             finalResult.setGid(gid);
-            finalResult.setErrorList(errorBomIdsList);
+            finalResult.setErrorBomIdList(errorBomIdsList);
             finalResult.setFlag((errorBomIdsList == null || errorBomIdsList.size() == 0) ? true : false);
 
             finalResultList.add(finalResult);
