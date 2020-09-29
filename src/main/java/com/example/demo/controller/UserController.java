@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -17,9 +19,10 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/login")
-    public RpcResponse<JSONObject> login(String userName, String password) {
+    public RpcResponse<HashMap<String, String>> login(String userName, String password) {
         JSONObject jsonObject = userService.login(userName, password);
-        System.out.println(jsonObject);
-       return RpcResponse.success(jsonObject);
+        HashMap<String, String> data = (HashMap<String, String>) jsonObject.get("data");
+
+        return RpcResponse.success(data);
     }
 }

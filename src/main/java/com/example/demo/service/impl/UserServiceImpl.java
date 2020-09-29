@@ -15,7 +15,6 @@ public class UserServiceImpl implements UserService {
 
     public JSONObject login(String userName, String password){
         String url = "http://127.0.0.1:8080/user/login?userName=" + userName +"&password=" + password;
-        System.out.println(url);
         return this.restTemplate.getForObject(url, JSONObject.class);
     }
 }
