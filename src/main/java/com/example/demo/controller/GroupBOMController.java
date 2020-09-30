@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 @RestController
 @RequestMapping("/groupBom")
@@ -55,13 +56,18 @@ public class GroupBOMController {
     }
 
     @PostMapping("/chenkGroup")
-    public RpcResponse<HashMap<String, Boolean>> chenkGroup(MultipartFile file) {
+    public RpcResponse<ArrayList<FinalResult>> chenkGroup(MultipartFile file) {
         if (null == file) {
             return RpcResponse.error(new ErrorInfo(101, "未上传文件"));
         }
         ArrayList<ArrayList<String>> arrayLists = AnalysisService.getGroupAndBomList(file);
-        HashMap<String, Boolean> booleanHashMap = analysisService.chenkGroup(arrayLists.get(0));
-        return RpcResponse.success(booleanHashMap);
+        HashSet<String> groupSet = new HashSet<>();
+        groupSet.addAll(arrayLists.get(1));
+        ArrayList<String> groupList = new ArrayList<>();
+        groupList.addAll(groupSet);
+        HashMap<String, Boolean> booleanHashMap = analysisService.chenkGroup(groupList);
+        ArrayList<FinalResult> booleanHashSet = analysisService.secondGroupCheck(booleanHashMap);
+        return RpcResponse.success(booleanHashSet);
     }
 
     @PostMapping("/secondGroupCheck")
@@ -69,8 +75,13 @@ public class GroupBOMController {
         if (null == file) {
             return RpcResponse.error(new ErrorInfo(101, "未上传文件"));
         }
-        ArrayList<ArrayList<String>> arrayLists = AnalysisService.getGroupAndBomList(file);
-        HashMap<String, Boolean> booleanHashMap = analysisService.chenkGroup(arrayLists.get(0));
+        //ArrayList<ArrayList<String>> arrayLists = AnalysisService.getGroupAndBomList(file);
+
+        HashMap<String, Boolean> booleanHashMap = new HashMap<>();
+        booleanHashMap.put( "g254", false);
+        booleanHashMap.put( "g7", false);
+        booleanHashMap.put( "g1349", false);
+        booleanHashMap.put( "g510", false);
         ArrayList<FinalResult> result = analysisService.secondGroupCheck(booleanHashMap);
         return RpcResponse.success(result);
     }

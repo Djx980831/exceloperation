@@ -433,6 +433,14 @@ public class AnalysisService {
     private static ArrayList<GroupInfo> listToGroupInfoList(ArrayList list) {
         ArrayList<GroupInfo> info = new ArrayList<>();
         String[] strings = list.get(1).toString().split(",");
+        if (strings.length == 1) {
+            GroupInfo groupInfo = new GroupInfo();
+            groupInfo.setGroupId(list.get(0).toString());
+            groupInfo.setBomId(strings[0]);
+
+            info.add(groupInfo);
+            return info;
+        }
         if (null != strings) {
             for (int i = 0; i < strings.length; i++) {
                 GroupInfo groupInfo = new GroupInfo();
