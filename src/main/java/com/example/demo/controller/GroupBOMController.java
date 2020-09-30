@@ -55,8 +55,8 @@ public class GroupBOMController {
         return RpcResponse.success("success");
     }
 
-    @PostMapping("/chenkGroup")
-    public RpcResponse<ArrayList<FinalResult>> chenkGroup(MultipartFile file) {
+    @PostMapping("/checkGroup")
+    public RpcResponse<ArrayList<FinalResult>> checkGroup(MultipartFile file) {
         if (null == file) {
             return RpcResponse.error(new ErrorInfo(101, "未上传文件"));
         }
