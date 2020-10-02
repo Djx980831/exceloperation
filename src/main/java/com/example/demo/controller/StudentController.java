@@ -1,9 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.Student;
+import com.example.demo.service.RedisService;
 import com.example.demo.service.StudentService;
 import com.example.demo.service.impl.AnalysisService;
 import com.example.demo.util.ErrorInfo;
+import com.example.demo.util.RedisUtils;
 import com.example.demo.util.RpcResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,11 +14,14 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 
 @RestController
-@RequestMapping("/testBoot")
+@RequestMapping("/redis")
 public class StudentController {
 
     @Autowired
     private StudentService studentService;
+
+    @Autowired
+    private RedisService redisService;
 
     @PostMapping("/upLoadFile")
     @ResponseBody
@@ -40,5 +45,13 @@ public class StudentController {
         System.out.println(file);
         String name = "djx";
         return RpcResponse.success(name);
+    }
+
+    @PostMapping("/testRedis")
+    public RpcResponse<String> testRedis(String key, String value) {
+        System.out.println("测试redis");
+        redisService.testRedis(key, value);
+
+        return RpcResponse.success("success");
     }
 }

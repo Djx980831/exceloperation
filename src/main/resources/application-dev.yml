@@ -7,6 +7,17 @@ spring:
     password: root
     url: jdbc:mysql://8.129.41.202:3306/wxq?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
     driver-class-name: com.mysql.jdbc.Driver
+  redis:
+    host: 8.129.41.202
+    port: 6379
+    password: root
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: 1
+        max-idle: 8
+        min-idle: 0
+        timeout: 30000
 
 mybatis:
   mapper-locations: classpath:mapping/*Mapper.xml
@@ -17,4 +28,4 @@ logging:
   level:
     com:
       example:
-        mapper : debug
+        mapper: debug
