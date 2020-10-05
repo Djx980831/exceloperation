@@ -5,7 +5,6 @@ import com.example.demo.service.RedisService;
 import com.example.demo.service.StudentService;
 import com.example.demo.service.impl.AnalysisService;
 import com.example.demo.util.ErrorInfo;
-import com.example.demo.util.RedisUtils;
 import com.example.demo.util.RpcResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 
 @RestController
-@RequestMapping("/redis")
+@RequestMapping("/student")
 public class StudentController {
 
     @Autowired
@@ -49,8 +48,7 @@ public class StudentController {
 
     @PostMapping("/testRedis")
     public RpcResponse<String> testRedis(String key, String value) {
-        System.out.println("测试redis");
-        redisService.testRedis(key, value);
+
 
         return RpcResponse.success("success");
     }
