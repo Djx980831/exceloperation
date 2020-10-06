@@ -114,7 +114,7 @@
     </select>
 
     <select id="getSonIdsByBomIds" resultType="java.lang.String">
-        select sonId from bom where bomId in
+        select DISTINCT sonId from bom where bomId in
         <foreach collection="list" open="(" close=")" item="bomIds" separator=",">
             #{bomIds}
         </foreach>

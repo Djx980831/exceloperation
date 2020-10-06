@@ -1,7 +1,12 @@
 package com.example.demo.service.impl;
 
+import checkers.units.quals.A;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.example.demo.entity.*;
 import com.example.demo.mapper.GroupBOMMapper;
+import com.example.demo.util.RedisUtils;
 import com.example.demo.vo.response.FinalResult;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -31,6 +36,9 @@ public class AnalysisService {
 
     @Autowired
     private GroupBOMMapper groupBOMMapper;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
     public Boolean isCheckTrue(String groupId) {
         ArrayList<String> bomIds = groupBOMMapper.getBomIdsByGroupId(groupId);
@@ -614,20 +622,45 @@ public class AnalysisService {
 
     public HashMap<String, Boolean> isNotSameGroup(ArrayList<ArrayList<String>> list) {
         ArrayList<String> groupIdList = list.get(2);
-        int length = groupIdList.size();
+        HashSet<String> groupIdSet = new HashSet<>();
+        ArrayList<String> resultGroupIdList = new ArrayList<>();
+        groupIdSet.addAll(groupIdList);
+        resultGroupIdList.addAll(groupIdSet);
+        int length = resultGroupIdList.size();
         HashMap<String, Boolean> result = new HashMap<>();
         HashMap<String, ArrayList<String>> groupAndSonIdsMap = new HashMap<>();
         for (int i = 0; i < length; i++) {
-            ArrayList<String> bomIds = groupBOMMapper.getBomIdsByGroupId(groupIdList.get(i));
-            ArrayList<String> sonIds = groupBOMMapper.getSonIdsByBomIds(bomIds);
-            groupAndSonIdsMap.put(groupIdList.get(i), sonIds);
+            //判断redis中是否有group BomIds缓存
+            String groupIdKey = resultGroupIdList.get(i) + "BomIdsList";
+            ArrayList<String> bomIds = new ArrayList<>(100);
+            if (redisUtils.get(groupIdKey) != null) {
+                bomIds = (ArrayList) JSONObject.parseObject((String) redisUtils.get(groupIdKey), ArrayList.class);
+            } else {
+                 bomIds =  groupBOMMapper.getBomIdsByGroupId(resultGroupIdList.get(i));
+                 redisUtils.set(groupIdKey, JSONObject.toJSONString(bomIds));
+            }
+
+            //判断redis中是否有group onIds缓存
+            String sonIdsKey = resultGroupIdList.get(i) + "SonIdsList";
+            ArrayList<String> sonIds = new ArrayList<>(500);
+            if (redisUtils.get(sonIdsKey) != null) {
+                sonIds = (ArrayList) JSONObject.parseObject((String) redisUtils.get(sonIdsKey), ArrayList.class);
+            } else {
+                sonIds = groupBOMMapper.getSonIdsByBomIds(bomIds);
+                redisUtils.set(sonIdsKey, JSONObject.toJSONString(sonIds));
+            }
+            groupAndSonIdsMap.put(resultGroupIdList.get(i), sonIds);
         }
         for (int i = 0; i < length; i++) {
             Boolean flag = false;
             for (int j = i + 1; j < length; j++) {
-                flag = bomGroupIsTrueOrFalse(groupAndSonIdsMap.get(i), groupAndSonIdsMap.get(j));
+                flag = bomGroupIsTrueOrFalse(groupAndSonIdsMap.get(resultGroupIdList.get(i)), groupAndSonIdsMap.get(resultGroupIdList.get(j)));
+                if (flag == true) {
+                    System.out.println(resultGroupIdList.get(i) + "---" + resultGroupIdList.get(j));
+                    break;
+                }
             }
-            result.put(groupIdList.get(i), flag);
+            result.put(resultGroupIdList.get(i), flag);
         }
 
         return result;
