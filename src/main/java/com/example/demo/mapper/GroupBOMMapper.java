@@ -21,4 +21,6 @@ public interface GroupBOMMapper {
     ArrayList<String> getBomIdsBySonIds(List<String> sonIds);
 
     ArrayList<String> getSonIdsByBomIds(List<String> bomIds);
+
+    ArrayList<String> getAllGroupIds();
 }

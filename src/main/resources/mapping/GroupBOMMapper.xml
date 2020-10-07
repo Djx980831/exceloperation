@@ -120,4 +120,7 @@
         </foreach>
     </select>
 
+    <select id="getAllGroupIds" resultType="java.lang.String">
+        select DISTINCT groupId from groupInfo
+    </select>
 </mapper>

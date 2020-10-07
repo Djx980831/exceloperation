@@ -70,6 +70,14 @@ public class GroupBOMController {
         return RpcResponse.success(booleanHashSet);
     }
 
+    @PostMapping("/checkGroupFromDataBases")
+    public RpcResponse<ArrayList<FinalResult>> checkGroupFromDataBases() {
+        ArrayList<String> groupIdsLists = service.getAllGroupIds();
+        HashMap<String, Boolean> booleanHashMap = analysisService.chenkGroup(groupIdsLists);
+        ArrayList<FinalResult> booleanHashSet = analysisService.secondGroupCheck(booleanHashMap);
+        return RpcResponse.success(booleanHashSet);
+    }
+
     @PostMapping("/secondGroupCheck")
     public RpcResponse<ArrayList<FinalResult>> secondGroupCheck(MultipartFile file) {
         if (null == file) {
@@ -87,11 +95,9 @@ public class GroupBOMController {
     }
 
     @PostMapping("/checkNotSameGroup")
-    public RpcResponse<HashMap<String, Boolean>> checkNotSameGroup(MultipartFile file) {
-        if (null == file) {
-            return RpcResponse.error(new ErrorInfo(101, "未上传文件"));
-        }
-        HashMap<String, Boolean> result = analysisService.isNotSameGroup(analysisService.getGroupAndBomList(file));
+    public RpcResponse<HashMap<String, Boolean>> checkNotSameGroup() {
+        ArrayList<String> groupIdsLists = service.getAllGroupIds();
+        HashMap<String, Boolean> result = analysisService.isNotSameGroup(groupIdsLists);
         return RpcResponse.success(result);
     }
 

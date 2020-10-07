@@ -1,8 +1,5 @@
 package com.example.demo.service.impl;
 
-import checkers.units.quals.A;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.demo.entity.*;
 import com.example.demo.mapper.GroupBOMMapper;
@@ -41,14 +38,36 @@ public class AnalysisService {
     private RedisUtils redisUtils;
 
     public Boolean isCheckTrue(String groupId) {
-        ArrayList<String> bomIds = groupBOMMapper.getBomIdsByGroupId(groupId);
+        String groupIdKey = groupId + "BomIdsList";
+        ArrayList<String> bomIds = new ArrayList<>();
+        if (redisUtils.get(groupIdKey) != null) {
+            bomIds = (ArrayList) JSONObject.parseObject((String) redisUtils.get(groupIdKey), ArrayList.class);
+        } else {
+            bomIds = groupBOMMapper.getBomIdsByGroupId(groupId);
+            redisUtils.set(groupIdKey, JSONObject.toJSONString(bomIds));
+        }
         ArrayList<ArrayList<String>> bomAllSonIds = new ArrayList<>();
+        String sonIdsKey = "";
         for (int i = 0; i < bomIds.size(); i++) {
-            ArrayList<String> sonIds = groupBOMMapper.getSonIdsByBomId(bomIds.get(i));
+            sonIdsKey = bomIds.get(i) + "_SonIds";
+            ArrayList<String> sonIds = new ArrayList<>();
+            if (redisUtils.get(sonIdsKey) != null) {
+                sonIds = (ArrayList) JSONObject.parseObject((String) redisUtils.get(sonIdsKey), ArrayList.class);
+            } else {
+                sonIds = groupBOMMapper.getSonIdsByBomId(bomIds.get(i));
+                redisUtils.set(sonIdsKey, JSONObject.toJSONString(sonIds));
+            }
             bomAllSonIds.add(sonIds);
         }
         int index = getMaxCount(bomAllSonIds);
-        ArrayList resultBomIds = groupBOMMapper.getBomIdsBySonIds(bomAllSonIds.get(index));
+        String sonIds4BomIdMaxKey = bomAllSonIds.get(index) + "_AllBoms4SonId";
+        ArrayList<String> resultBomIds = new ArrayList();
+        if (redisUtils.get(sonIds4BomIdMaxKey) != null) {
+            resultBomIds = (ArrayList) JSONObject.parseObject((String) redisUtils.get(sonIds4BomIdMaxKey), ArrayList.class);
+        } else {
+            resultBomIds = groupBOMMapper.getBomIdsBySonIds(bomAllSonIds.get(index));
+            redisUtils.set(sonIds4BomIdMaxKey, JSONObject.toJSONString(resultBomIds));
+        }
         if (!isTrueOrFalse(bomIds, resultBomIds)) {
             return false;
         }
@@ -99,11 +118,26 @@ public class AnalysisService {
             FinalResult finalResult = new FinalResult();
             HashSet<String> sonIdsDoneSet = new HashSet<>(64);
             ArrayList<String> errorBomIdsList = new ArrayList<>();
-            ArrayList<String> bomIds = groupBOMMapper.getBomIdsByGroupId(gid);
+            String groupIdKey = gid + "BomIdsList";
+            ArrayList<String> bomIds = new ArrayList<>();
+            if (redisUtils.get(groupIdKey) != null) {
+                bomIds = (ArrayList) JSONObject.parseObject((String) redisUtils.get(groupIdKey), ArrayList.class);
+            } else {
+                bomIds = groupBOMMapper.getBomIdsByGroupId(gid);
+                redisUtils.set(groupIdKey, JSONObject.toJSONString(bomIds));
+            }
             Boolean flag = null;
+            String sonIdsKey = "";
             for (int i = 0; i < bomIds.size(); i++) {
                 flag = false;
-                ArrayList<String> sonIds = groupBOMMapper.getSonIdsByBomId(bomIds.get(i));
+                sonIdsKey = bomIds.get(i) + "_SonIds";
+                ArrayList<String> sonIds = new ArrayList<>();
+                if (redisUtils.get(sonIdsKey) != null) {
+                    sonIds = (ArrayList) JSONObject.parseObject((String) redisUtils.get(sonIdsKey), ArrayList.class);
+                } else {
+                    sonIds = groupBOMMapper.getSonIdsByBomId(bomIds.get(i));
+                    redisUtils.set(sonIdsKey, JSONObject.toJSONString(sonIds));
+                }
                 if (sonIdsDoneSet != null && sonIdsDoneSet.size() > 0) {
                     for (int j = 0; j < sonIds.size(); j++) {
                         if (sonIdsDoneSet.contains(sonIds.get(j))) {
@@ -148,9 +182,17 @@ public class AnalysisService {
     }
 
     private ArrayList<String> getAfterBomId4SonIds(ArrayList<String> list, int index) {
+        String key = "";
         ArrayList<String> result = new ArrayList<>(200);
         for (int i = index + 1; i < list.size(); i++) {
-            ArrayList<String> mid = groupBOMMapper.getSonIdsByBomId(list.get(i));
+            ArrayList<String> mid = new ArrayList<>();
+            key = list.get(i) + "_SonIds";
+            if (redisUtils.get(key) != null) {
+                mid = (ArrayList) JSONObject.parseObject((String) redisUtils.get(key), ArrayList.class);
+            } else {
+                mid = groupBOMMapper.getSonIdsByBomId(list.get(i));
+                redisUtils.set(key, JSONObject.toJSONString(mid));
+            }
             result.addAll(mid);
         }
         return result;
@@ -620,12 +662,7 @@ public class AnalysisService {
         return result;
     }
 
-    public HashMap<String, Boolean> isNotSameGroup(ArrayList<ArrayList<String>> list) {
-        ArrayList<String> groupIdList = list.get(2);
-        HashSet<String> groupIdSet = new HashSet<>();
-        ArrayList<String> resultGroupIdList = new ArrayList<>();
-        groupIdSet.addAll(groupIdList);
-        resultGroupIdList.addAll(groupIdSet);
+    public HashMap<String, Boolean> isNotSameGroup(ArrayList<String> resultGroupIdList) {
         int length = resultGroupIdList.size();
         HashMap<String, Boolean> result = new HashMap<>();
         HashMap<String, ArrayList<String>> groupAndSonIdsMap = new HashMap<>();

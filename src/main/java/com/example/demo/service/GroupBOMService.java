@@ -10,4 +10,6 @@ public interface GroupBOMService {
     void addGrouping(ArrayList<GroupInfo> groupingArrayList);
 
     void addBom(ArrayList<Bom> bomArrayList);
+
+    ArrayList<String> getAllGroupIds();
 }
