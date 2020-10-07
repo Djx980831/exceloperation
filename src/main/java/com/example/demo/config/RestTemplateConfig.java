@@ -1,31 +1,89 @@
 package com.example.demo.config;
 
+import java.lang.reflect.Method;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachingConfigurerSupport;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * RestTemplate配置
- * 这是一种JavaConfig的容器配置，用于spring容器的bean收集与注册，并通过参数传递的方式实现依赖注入。
- * "@Configuration"注解标注的配置类，都是spring容器配置类，springboot通过"@EnableAutoConfiguration"
- * 注解将所有标注了"@Configuration"注解的配置类，"一股脑儿"全部注入spring容器中。
- *
- * @author dongjx
- *
- */
 @Configuration
-public class RestTemplateConfig {
+@EnableCaching
+public class RedisConfig extends CachingConfigurerSupport{
+    
+    @Value("${spring.redis.host}")
+    private String host;
+    @Value("${spring.redis.port}")
+    private int port;
+    @Value("${spring.redis.timeout}")
+    private int timeout;
+    @Value("${spring.redis.password}")
+    private String password;
+    @Value("${spring.redis.pool.max-active}")
+    private int maxActive;
+    @Value("${spring.redis.pool.max-wait}")
+    private int maxWait;
+    @Value("${spring.redis.pool.max-idle}")
+    private int maxIdle;
+    @Value("${spring.redis.pool.min-idle}")
+    private int minIdle;
 
     @Bean
-    public RestTemplate restTemplate(ClientHttpRequestFactory factory) {
-        return new RestTemplate(factory);
+    public KeyGenerator wiselyKeyGenerator(){
+        return new KeyGenerator() {
+            @Override
+            public Object generate(Object target, Method method, Object... params) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(target.getClass().getName());
+                sb.append(method.getName());
+                for (Object obj : params) {
+                    sb.append(obj.toString());
+                }
+                return sb.toString();
+            }
+        };
     }
 
     @Bean
-    public ClientHttpRequestFactory simpleClientHttpRequestFactory() {
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+    public JedisConnectionFactory redisConnectionFactory() {
+        JedisConnectionFactory factory = new JedisConnectionFactory();
+        factory.setHostName(host);
+        factory.setPort(port);
+        factory.setTimeout(timeout); //设置连接超时时间
+        factory.setPassword(password);
+        factory.getPoolConfig().setMaxIdle(maxIdle);
+        factory.getPoolConfig().setMinIdle(minIdle);
+        factory.getPoolConfig().setMaxTotal(maxActive);
+        factory.getPoolConfig().setMaxWaitMillis(maxWait);
         return factory;
+    }
+
+
+    @Bean
+    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory factory) {
+        StringRedisTemplate template = new StringRedisTemplate(factory);
+        setSerializer(template); //设置序列化工具，这样ReportBean不需要实现Serializable接口
+        template.afterPropertiesSet();
+        return template;
+    }
+
+    private void setSerializer(StringRedisTemplate template) {
+        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+        ObjectMapper om = new ObjectMapper();
+        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        jackson2JsonRedisSerializer.setObjectMapper(om);
+        template.setValueSerializer(jackson2JsonRedisSerializer);
     }
 }
