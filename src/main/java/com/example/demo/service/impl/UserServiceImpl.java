@@ -10,11 +10,11 @@ import com.alibaba.fastjson.JSONObject;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private RestTemplate restTemplate ;
+//    @Autowired
+//    private RestTemplate restTemplate ;
 
-    public JSONObject login(String userName, String password){
-        String url = "http://127.0.0.1:8080/user/login?userName=" + userName +"&password=" + password;
-        return this.restTemplate.getForObject(url, JSONObject.class);
-    }
+//    public JSONObject login(String userName, String password){
+//        String url = "http://127.0.0.1:8080/user/login?userName=" + userName +"&password=" + password;
+//        return this.restTemplate.getForObject(url, JSONObject.class);
+//    }
 }
