@@ -839,7 +839,7 @@ public class AnalysisService {
     private Person listToPerson(ArrayList<String> list) {
         Person data = new Person();
         data.setId(list.get(0));
-        data.setPassword(RandomPassword.getSomeString());
+        data.setPassword("Aa123456");
         data.setMail(list.get(0) + "@tcl.com");
         return data;
     }
