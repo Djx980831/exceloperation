@@ -15,14 +15,14 @@ import java.util.HashMap;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
-
-    @GetMapping("/login")
-    public RpcResponse<HashMap<String, String>> login(String userName, String password) {
-        JSONObject jsonObject = userService.login(userName, password);
-        HashMap<String, String> data = (HashMap<String, String>) jsonObject.get("data");
-
-        return RpcResponse.success(data);
-    }
+//    @Autowired
+//    private UserService userService;
+//
+//    @GetMapping("/login")
+//    public RpcResponse<HashMap<String, String>> login(String userName, String password) {
+//        JSONObject jsonObject = userService.login(userName, password);
+//        HashMap<String, String> data = (HashMap<String, String>) jsonObject.get("data");
+//
+//        return RpcResponse.success(data);
+//    }
 }
