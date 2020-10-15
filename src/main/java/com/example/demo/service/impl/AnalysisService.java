@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.example.demo.entity.*;
 import com.example.demo.mapper.GroupBOMMapper;
+import com.example.demo.util.RandomPassword;
 import com.example.demo.util.RedisUtils;
 import com.example.demo.vo.response.FinalResult;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -673,8 +674,8 @@ public class AnalysisService {
             if (redisUtils.get(groupIdKey) != null) {
                 bomIds = (ArrayList) JSONObject.parseObject((String) redisUtils.get(groupIdKey), ArrayList.class);
             } else {
-                 bomIds =  groupBOMMapper.getBomIdsByGroupId(resultGroupIdList.get(i));
-                 redisUtils.set(groupIdKey, JSONObject.toJSONString(bomIds));
+                bomIds = groupBOMMapper.getBomIdsByGroupId(resultGroupIdList.get(i));
+                redisUtils.set(groupIdKey, JSONObject.toJSONString(bomIds));
             }
 
             //判断redis中是否有group onIds缓存
@@ -782,6 +783,64 @@ public class AnalysisService {
         data.setCoun(list.get(1).toString());
         data.setYw(list.get(2).toString());
 
+        return data;
+    }
+
+    public ArrayList<Person> analysisMail(MultipartFile file) {
+        ArrayList<Person> personList = new ArrayList<>();
+        //获取文件名称
+        String fileName = file.getOriginalFilename();
+        System.out.println(fileName);
+
+        try {
+            //获取输入流
+            InputStream in = file.getInputStream();
+            //判断excel版本
+            Workbook workbook = null;
+            if (judegExcelEdition(fileName)) {
+                workbook = new XSSFWorkbook(in);
+            } else {
+                workbook = new HSSFWorkbook(in);
+            }
+
+            //获取工作表
+            Sheet sheet = workbook.getSheetAt(0);
+
+            //从第一行开始获取
+            for (int i = 0; i < sheet.getPhysicalNumberOfRows(); i++) {
+                ArrayList<String> list = new ArrayList<>();
+                //循环获取工作表的每一行
+                Row row = sheet.getRow(i);
+                if (null == row) {
+                    System.out.println("---------" + i);
+                    continue;
+                }
+                //循环获取每一列
+                for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                    //将每一个单元格的值装入列集合
+                    list.add(row.getCell(j).toString());
+                    row.getCell(j);
+                }
+                Person person = listToPerson(list);
+                personList.add(person);
+                //关闭资源
+                workbook.close();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("===================未找到文件======================");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("===================上传失败======================");
+        }
+        return personList;
+    }
+
+    private Person listToPerson(ArrayList<String> list) {
+        Person data = new Person();
+        data.setId(list.get(0));
+        data.setPassword("Aa123456");
+        data.setMail(list.get(0) + "@tcl.com");
         return data;
     }
 }
