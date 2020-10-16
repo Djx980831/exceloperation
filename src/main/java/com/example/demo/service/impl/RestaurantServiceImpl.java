@@ -81,6 +81,8 @@ public class RestaurantServiceImpl implements RestaurantService {
         int djxNum = RandomNumber.getRandomNumber();
         if (wyvNum > djxNum) {;
             sb.append("wyv的数字是: " + wyvNum + ", djx的数字是: " + djxNum + ", wyv赢，djx将接受的惩罚是：" + punName);
+        } else if (wyvNum == djxNum) {
+            sb.append("wyv的数字是: " + wyvNum + ", djx的数字是: " + djxNum + ", 平局。");
         } else {
             sb.append("wyv的数字是: " + wyvNum + ", djx的数字是: " + djxNum + ", djx赢，wyv将接受的惩罚是：" + punName);
         }
