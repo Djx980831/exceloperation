@@ -118,4 +118,9 @@ public class GroupBOMController {
         analysisService.writeFile(analysisService.getStringList(analysisService.assembBomId(file)));
         return RpcResponse.success("success");
     }
+
+    @PostMapping("/getRowIndex")
+    public RpcResponse<ArrayList<Integer>> getRowIndex(MultipartFile source, MultipartFile target) {
+        return RpcResponse.success(analysisService.getRowIndex(source, target));
+    }
 }

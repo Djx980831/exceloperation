@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import checkers.units.quals.A;
 import com.alibaba.fastjson.JSONObject;
 import com.example.demo.entity.*;
 import com.example.demo.mapper.GroupBOMMapper;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 
 import java.io.*;
+import java.security.PublicKey;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -985,5 +987,111 @@ public class AnalysisService {
         numList.add(13);
 
         return numList;
+    }
+
+    public ArrayList<Integer> getRowIndex(MultipartFile source, MultipartFile target) {
+        ArrayList<Integer> finalList = new ArrayList<>();
+        HashMap<Integer, String> resultMap = getSourceMap(source);
+        ArrayList<String> resultList = getTargetList(target);
+        for (int i = 0; i < resultList.size(); i++) {
+            String val = resultList.get(i);
+            Integer index = getKey(resultMap, val);
+            finalList.add(index);
+        }
+        return finalList;
+    }
+
+    public HashMap<Integer, String> getSourceMap(MultipartFile file) {
+        HashMap<Integer, String> resultMap = new HashMap<>();
+        //获取文件名称
+        String fileName = file.getOriginalFilename();
+        System.out.println(fileName);
+
+        try {
+            //获取输入流
+            InputStream in = file.getInputStream();
+            //判断excel版本
+            Workbook workbook = null;
+            if (judegExcelEdition(fileName)) {
+                workbook = new XSSFWorkbook(in);
+            } else {
+                workbook = new HSSFWorkbook(in);
+            }
+            //获取第一张工作表
+            Sheet sheet = workbook.getSheetAt(0);
+            //循环获取工作表的每一行
+            Row row = sheet.getRow(1);
+
+            //循环获取每一列
+            for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                //将每一个单元格的值装入列集合
+                resultMap.put(j, row.getCell(j).toString());
+                row.getCell(j);
+            }
+            //关闭资源
+            workbook.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("===================未找到文件======================");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("===================上传失败======================");
+        }
+        return resultMap;
+    }
+
+    public ArrayList<String> getTargetList(MultipartFile file) {
+        ArrayList<String> resultList = new ArrayList<>();
+        //获取文件名称
+        String fileName = file.getOriginalFilename();
+        System.out.println(fileName);
+
+        try {
+            //获取输入流
+            InputStream in = file.getInputStream();
+            //判断excel版本
+            Workbook workbook = null;
+            if (judegExcelEdition(fileName)) {
+                workbook = new XSSFWorkbook(in);
+            } else {
+                workbook = new HSSFWorkbook(in);
+            }
+            //获取第一张工作表
+            Sheet sheet = workbook.getSheetAt(0);
+            //循环获取工作表的每一行
+            Row row = sheet.getRow(2);
+
+            //循环获取每一列
+            for (int j = 1; j < row.getPhysicalNumberOfCells(); j++) {
+                //将每一个单元格的值装入列集合
+                resultList.add(row.getCell(j).toString());
+                row.getCell(j);
+            }
+            //关闭资源
+            workbook.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("===================未找到文件======================");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("===================上传失败======================");
+        }
+        return resultList;
+    }
+
+    private Integer getKey(HashMap<Integer, String> hashMap, String val) {
+        for (Map.Entry<Integer, String> entry : hashMap.entrySet()) {
+            if (Objects.equals(entry.getValue(), val)) {
+                return entry.getKey();
+            }
+        }
+        for (int i = 0; i < hashMap.size(); i++) {
+            if (hashMap.get(i).contains(val) || val.contains(hashMap.get(i))) {
+                return i;
+            }
+        }
+        return null;
     }
 }
