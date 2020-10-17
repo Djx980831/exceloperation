@@ -871,11 +871,16 @@ public class AnalysisService {
                 }
                 //循环获取每一列
                 ArrayList<String> rowList = new ArrayList<>();
-                for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
-                    //将每一个单元格的值装入列集合
-                    rowList.add(row.getCell(j).toString());
-                    row.getCell(j);
+                ArrayList<Integer> numList = getOneList();
+                for (int m = 0; m < numList.size(); m++) {
+                    int index = numList.get(m);
+                    rowList.add(row.getCell(index).toString());
+                    row.getCell(index);
                 }
+                //将每一个单元格的值装入列集合
+//                    rowList.add(row.getCell(j).toString());
+//                    row.getCell(j);
+
                 System.out.println(rowList);
                 resultStringList.add(rowList);
                 //关闭资源
@@ -893,6 +898,39 @@ public class AnalysisService {
 
     public ArrayList<String> getStringList(ArrayList<ArrayList<String>> stringList) {
         ArrayList<String> resultList = new ArrayList<>();
+        for (int i = 0; i < stringList.size(); i++) {
+            ArrayList<String> midList = stringList.get(i);
+            StringBuilder sb = new StringBuilder();
+            for (int j = 0; j < midList.size(); j++) {
+                sb.append(midList.get(j)).append("@");
+            }
+            resultList.add(sb.toString());
+        }
+        return resultList;
+    }
+
+    public boolean writeFile(ArrayList<String> stringArrayList) {
+        String filename = "E:\\txt\\abc.txt";
+        try {
+            File f = new File(filename);
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+            OutputStreamWriter write = new OutputStreamWriter(new FileOutputStream(f));
+            BufferedWriter writer = new BufferedWriter(write);
+            for (int i = 0; i < stringArrayList.size(); i++) {
+                writer.write(stringArrayList.get(i) + "\r\n");
+                writer.flush();
+            }
+            write.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private ArrayList<Integer> getOneList() {
         ArrayList<Integer> numList = new ArrayList<>();
         numList.add(0);
         numList.add(7);
@@ -946,36 +984,6 @@ public class AnalysisService {
         numList.add(77);
         numList.add(13);
 
-        for (int i = 0; i < stringList.size(); i++) {
-            StringBuilder sb = new StringBuilder();
-            ArrayList<String> midList = stringList.get(i);
-            for (int j = 0; j < numList.size(); j++) {
-                String mid = midList.get(numList.get(j));
-                sb.append(mid).append("@");
-            }
-            resultList.add(sb.toString());
-        }
-        return resultList;
-    }
-
-    public boolean writeFile(ArrayList<String> stringArrayList) {
-        String filename = "E:\\txt\\abc.txt";
-        try {
-            File f = new File(filename);
-            if (!f.exists()) {
-                f.createNewFile();
-            }
-            OutputStreamWriter write = new OutputStreamWriter(new FileOutputStream(f));
-            BufferedWriter writer = new BufferedWriter(write);
-            for (int i = 0; i < stringArrayList.size(); i++) {
-                writer.write(stringArrayList.get(i) + "\r\n");
-                writer.flush();
-            }
-            write.close();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
+        return numList;
     }
 }
