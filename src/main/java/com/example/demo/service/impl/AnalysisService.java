@@ -19,9 +19,7 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -842,5 +840,142 @@ public class AnalysisService {
         data.setPassword("Aa123456");
         data.setMail(list.get(0) + "@tcl.com");
         return data;
+    }
+
+    //拼装bomid属性
+    public ArrayList<ArrayList<String>> assembBomId(MultipartFile file) {
+        ArrayList<ArrayList<String>> resultStringList = new ArrayList<>();
+        //获取文件名称
+        String fileName = file.getOriginalFilename();
+        System.out.println(fileName);
+
+        try {
+            //获取输入流
+            InputStream in = file.getInputStream();
+            //判断excel版本
+            Workbook workbook = null;
+            if (judegExcelEdition(fileName)) {
+                workbook = new XSSFWorkbook(in);
+            } else {
+                workbook = new HSSFWorkbook(in);
+            }
+
+            //获取第一张工作表
+            Sheet sheet = workbook.getSheetAt(0);
+            //从第二行开始获取
+            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+                //循环获取工作表的每一行
+                Row row = sheet.getRow(i);
+                if (null == row) {
+                    continue;
+                }
+                //循环获取每一列
+                ArrayList<String> rowList = new ArrayList<>();
+                for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                    //将每一个单元格的值装入列集合
+                    rowList.add(row.getCell(j).toString());
+                    row.getCell(j);
+                }
+                System.out.println(rowList);
+                resultStringList.add(rowList);
+                //关闭资源
+                workbook.close();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("===================未找到文件======================");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("===================上传失败======================");
+        }
+        return resultStringList;
+    }
+
+    public ArrayList<String> getStringList(ArrayList<ArrayList<String>> stringList) {
+        ArrayList<String> resultList = new ArrayList<>();
+        ArrayList<Integer> numList = new ArrayList<>();
+        numList.add(0);
+        numList.add(7);
+        numList.add(9);
+        numList.add(10);
+        numList.add(11);
+        numList.add(24);
+        numList.add(25);
+        numList.add(26);
+        numList.add(27);
+        numList.add(28);
+        numList.add(29);
+        numList.add(30);
+        numList.add(31);
+        numList.add(31);
+        numList.add(32);
+        numList.add(33);
+        numList.add(34);
+        numList.add(35);
+        numList.add(36);
+        numList.add(37);
+        numList.add(38);
+        numList.add(39);
+        numList.add(40);
+        numList.add(41);
+        numList.add(42);
+        numList.add(43);
+        numList.add(44);
+        numList.add(46);
+        numList.add(49);
+        numList.add(50);
+        numList.add(51);
+        numList.add(52);
+        numList.add(53);
+        numList.add(54);
+        numList.add(55);
+        numList.add(56);
+        numList.add(57);
+        numList.add(58);
+        numList.add(59);
+        numList.add(61);
+        numList.add(63);
+        numList.add(65);
+        numList.add(67);
+        numList.add(71);
+        numList.add(73);
+        numList.add(75);
+        numList.add(19);
+        numList.add(21);
+        numList.add(23);
+        numList.add(77);
+        numList.add(13);
+
+        for (int i = 0; i < stringList.size(); i++) {
+            StringBuilder sb = new StringBuilder();
+            ArrayList<String> midList = stringList.get(i);
+            for (int j = 0; j < numList.size(); j++) {
+                String mid = midList.get(numList.get(j));
+                sb.append(mid).append("@");
+            }
+            resultList.add(sb.toString());
+        }
+        return resultList;
+    }
+
+    public boolean writeFile(ArrayList<String> stringArrayList) {
+        String filename = "E:\\txt\\abc.txt";
+        try {
+            File f = new File(filename);
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+            OutputStreamWriter write = new OutputStreamWriter(new FileOutputStream(f));
+            BufferedWriter writer = new BufferedWriter(write);
+            for (int i = 0; i < stringArrayList.size(); i++) {
+                writer.write(stringArrayList.get(i) + "\r\n");
+                writer.flush();
+            }
+            write.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

@@ -109,4 +109,13 @@ public class GroupBOMController {
         ArrayList<String> result = analysisService.checkInv(analysisService.getInvAndItemsSet(file));
         return RpcResponse.success(result);
     }
+
+    @PostMapping("/writeFile")
+    public RpcResponse<String> writeFile(MultipartFile file) {
+        if (null == file) {
+            return RpcResponse.error(new ErrorInfo(101, "未上传文件"));
+        }
+        analysisService.writeFile(analysisService.getStringList(analysisService.assembBomId(file)));
+        return RpcResponse.success("success");
+    }
 }
