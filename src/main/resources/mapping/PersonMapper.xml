@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.PersonMapper">
+
+    <insert id="addPerson" parameterType="com.example.demo.entity.Person">
+        insert into person (id, password, mail) values
+        <foreach collection="list" index="index" item="person" separator=",">
+            (
+            #{person.id,jdbcType=VARCHAR}, #{person.password,jdbcType=VARCHAR}, #{person.mail,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+</mapper>
