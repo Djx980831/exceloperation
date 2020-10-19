@@ -845,15 +845,15 @@ public class AnalysisService {
     }
 
     //拼装bomid属性
-    public ArrayList<ArrayList<String>> assembBomId(MultipartFile file) {
+    public ArrayList<ArrayList<String>> assembBomId(MultipartFile source, MultipartFile target) {
         ArrayList<ArrayList<String>> resultStringList = new ArrayList<>();
         //获取文件名称
-        String fileName = file.getOriginalFilename();
+        String fileName = source.getOriginalFilename();
         System.out.println(fileName);
 
         try {
             //获取输入流
-            InputStream in = file.getInputStream();
+            InputStream in = source.getInputStream();
             //判断excel版本
             Workbook workbook = null;
             if (judegExcelEdition(fileName)) {
@@ -873,7 +873,7 @@ public class AnalysisService {
                 }
                 //循环获取每一列
                 ArrayList<String> rowList = new ArrayList<>();
-                ArrayList<Integer> numList = getOneList();
+                ArrayList<Integer> numList = getRowIndex(source, target);
                 for (int m = 0; m < numList.size(); m++) {
                     int index = numList.get(m);
                     rowList.add(row.getCell(index).toString());
@@ -1020,7 +1020,7 @@ public class AnalysisService {
             //获取第一张工作表
             Sheet sheet = workbook.getSheetAt(0);
             //循环获取工作表的每一行
-            Row row = sheet.getRow(1);
+            Row row = sheet.getRow(0);
 
             //循环获取每一列
             for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
@@ -1063,7 +1063,7 @@ public class AnalysisService {
             Row row = sheet.getRow(2);
 
             //循环获取每一列
-            for (int j = 1; j < row.getPhysicalNumberOfCells(); j++) {
+            for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
                 //将每一个单元格的值装入列集合
                 resultList.add(row.getCell(j).toString());
                 row.getCell(j);
@@ -1086,12 +1086,11 @@ public class AnalysisService {
             if (Objects.equals(entry.getValue(), val)) {
                 return entry.getKey();
             }
+//            else if (entry.getValue().contains(val) || val.contains(entry.getValue())) {
+//                return entry.getKey();
+//            }
         }
-        for (int i = 0; i < hashMap.size(); i++) {
-            if (hashMap.get(i).contains(val) || val.contains(hashMap.get(i))) {
-                return i;
-            }
-        }
+         //|| entry.getValue().contains(val) || val.contains(entry.getValue())
         return null;
     }
 }

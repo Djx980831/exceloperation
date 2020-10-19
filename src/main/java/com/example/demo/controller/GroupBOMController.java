@@ -111,11 +111,11 @@ public class GroupBOMController {
     }
 
     @PostMapping("/writeFile")
-    public RpcResponse<String> writeFile(MultipartFile file) {
-        if (null == file) {
+    public RpcResponse<String> writeFile(MultipartFile source, MultipartFile target) {
+        if ((null == source) || (null == target)) {
             return RpcResponse.error(new ErrorInfo(101, "未上传文件"));
         }
-        analysisService.writeFile(analysisService.getStringList(analysisService.assembBomId(file)));
+        analysisService.writeFile(analysisService.getStringList(analysisService.assembBomId(source, target)));
         return RpcResponse.success("success");
     }
 
