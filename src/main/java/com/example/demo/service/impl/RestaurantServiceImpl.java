@@ -60,8 +60,10 @@ public class RestaurantServiceImpl implements RestaurantService {
         String resName = restaurantArrayList.get(resIndex).getResName();
         ArrayList<String> dishList = hashMap.get(resName);
 
-        int dishIndex = RandomNumber.getRandomNumber(dishList.size());
-        String dishName = dishList.get(dishIndex);
+        int wyvDishIndex = RandomNumber.getRandomNumber(dishList.size());
+        String wyvDishName = dishList.get(wyvDishIndex);
+        int djxDishIndex = RandomNumber.getRandomNumber(dishList.size());
+        String djxDishName = dishList.get(djxDishIndex);
 
         ArrayList<String> punList = getPunishment();
         int punIndex = RandomNumber.getRandomNumber(punList.size());
@@ -70,7 +72,8 @@ public class RestaurantServiceImpl implements RestaurantService {
         String pun = getString(punName);
 
         result.setRes(resName);
-        result.setDishName(dishName);
+        result.setWyvDishName(wyvDishName);
+        result.setDjxDishName(djxDishName);
         result.setPunishment(pun);
         return result;
     }
@@ -79,7 +82,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         StringBuilder sb = new StringBuilder();
         int wyvNum = RandomNumber.getRandomNumber();
         int djxNum = RandomNumber.getRandomNumber();
-        if (wyvNum > djxNum) {;
+        if (wyvNum > djxNum) {
             sb.append("wyv的数字是: " + wyvNum + ", djx的数字是: " + djxNum + ", wyv赢，djx将接受的惩罚是：" + punName);
         } else if (wyvNum == djxNum) {
             sb.append("wyv的数字是: " + wyvNum + ", djx的数字是: " + djxNum + ", 平局。");

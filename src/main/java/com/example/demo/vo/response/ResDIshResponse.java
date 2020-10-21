@@ -4,7 +4,7 @@ import lombok.Data;
 
 /**
  * @param
- * @Description TODO
+ * @Description
  * @Author dongjingxiong
  * @return
  * @Date 2020-10-15 23:15
@@ -12,6 +12,7 @@ import lombok.Data;
 @Data
 public class ResDIshResponse {
     private String res;
-    private String dishName;
+    private String wyvDishName;
+    private String djxDishName;
     private String punishment;
 }
