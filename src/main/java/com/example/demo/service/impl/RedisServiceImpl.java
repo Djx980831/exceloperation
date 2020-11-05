@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class RedisServiceImpl implements RedisService {
@@ -37,5 +38,10 @@ public class RedisServiceImpl implements RedisService {
     public User getUser(String key) {
         User user = JSONObject.parseObject((String) redisUtils.get(key), User.class);
         return user;
+    }
+
+    @Override
+    public void addListKey(List<String> list) {
+        redisUtils.insertListKey(list);
     }
 }

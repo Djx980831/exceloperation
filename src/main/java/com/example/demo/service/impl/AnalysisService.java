@@ -6,6 +6,7 @@ import com.example.demo.entity.*;
 import com.example.demo.mapper.GroupBOMMapper;
 import com.example.demo.util.RandomPassword;
 import com.example.demo.util.RedisUtils;
+import com.example.demo.vo.response.BOMOwner;
 import com.example.demo.vo.response.FinalResult;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -834,6 +835,95 @@ public class AnalysisService {
             System.out.println("===================上传失败======================");
         }
         return personList;
+    }
+
+    public BOMOwner analysisBOMOwner(MultipartFile file) {
+       BOMOwner owner = new BOMOwner();
+        //获取文件名称
+        String fileName = file.getOriginalFilename();
+        System.out.println(fileName);
+
+        try {
+            //获取输入流
+            InputStream in = file.getInputStream();
+            //判断excel版本
+            Workbook workbook = null;
+            if (judegExcelEdition(fileName)) {
+                workbook = new XSSFWorkbook(in);
+            } else {
+                workbook = new HSSFWorkbook(in);
+            }
+
+            //获取工作表
+            Sheet sheet = workbook.getSheetAt(0);
+            HashMap<String, String> startOwnerMap = new HashMap<>();
+            HashMap<String, String> endOwnerMap = new HashMap<>();
+            //从第一行开始获取
+            for (int i = 0; i < sheet.getPhysicalNumberOfRows(); i++) {
+                //循环获取工作表的每一行
+                Row row = sheet.getRow(i);
+                if (null == row) {
+                    System.out.println("---------" + i);
+                    continue;
+                }
+                if (row.getCell(0).toString().startsWith("91") || row.getCell(0).toString().startsWith("Z1") || row.getCell(0).toString().startsWith("Z2") || row.getCell(0).toString().startsWith("H3") || row.getCell(0).toString().startsWith("H4") || row.getCell(0).toString().startsWith("H7")) {
+                    //continue;
+                    endOwnerMap.put(row.getCell(0).toString(), row.getCell(2).toString());
+                    if (startOwnerMap.containsKey(row.getCell(0).toString())) {
+                        continue;
+                    } else {
+                        startOwnerMap.put(row.getCell(0).toString(), row.getCell(2).toString());
+                    }
+                }
+                //关闭资源
+                workbook.close();
+            }
+            owner.setEndHashMapOwner(endOwnerMap);
+            owner.setStartHashMapOwner(startOwnerMap);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("===================未找到文件======================");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("===================上传失败======================");
+        }
+        return owner;
+    }
+
+    public boolean writeBOMOwner(BOMOwner owner) {
+        //String filename = "E:\\txt\\abc.txt";
+        String filename = "E:\\txt\\bbb.txt";
+        HashMap<String, String> start = owner.getStartHashMapOwner();
+        HashMap<String, String> end = owner.getEndHashMapOwner();
+        try {
+            File f = new File(filename);
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+            OutputStreamWriter write = new OutputStreamWriter(new FileOutputStream(f));
+            BufferedWriter writer = new BufferedWriter(write);
+//            for (int i = 0; i < owner.getEndHashMapOwner().size(); i++) {
+//                writer.write( + "\r\n");
+//                writer.flush();
+//            }
+            for(Map.Entry<String, String> entry: start.entrySet())
+            {
+                writer.write(entry.getKey()+ " --- "+entry.getValue() + "\r\n");
+                writer.flush();
+            }
+            write.write("----------------------------" + "\r\n");
+            writer.flush();
+            for(Map.Entry<String, String> entry: end.entrySet())
+            {
+                writer.write(entry.getKey()+ " --- "+entry.getValue() + "\r\n");
+                writer.flush();
+            }
+            write.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private Person listToPerson(ArrayList<String> list) {

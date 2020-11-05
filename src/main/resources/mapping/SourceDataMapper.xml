@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.SourceDataMapper">
+
+    <insert id="addData" parameterType="string">
+        insert into plmData values
+        <foreach collection="list" index="index" item="data" separator=",">
+            (
+            null, #{data,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="addECNData" parameterType="com.example.demo.entity.ECN">
+        insert into ecn values
+        <foreach collection="list" index="index" item="data" separator=",">
+            (
+            null, #{data.rowNum,jdbcType=INTEGER}, #{data.beforeString,jdbcType=VARCHAR}, #{data.afterString,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <select id="getPLMTargetAfterCount" parameterType="string" resultType="int">
+        select count(*) from plmData where stringValue = #{afterString}
+    </select>
+
+    <select id="getPLMTargetBeforeCount" parameterType="string" resultType="int">
+        select count(*) from plmData where stringValue = #{beforeString}
+    </select>
+</mapper>
