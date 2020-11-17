@@ -15,4 +15,9 @@
             )
         </foreach>
     </insert>
+    
+    <select id="getAttributeNameAndRange" resultType="com.example.demo.vo.response.FanYiResponse">
+        select attributeName, rangeSystem, rangeEN, rangeCN, attributeChineseName, attributeEnglishName
+        from part
+    </select>
 </mapper>

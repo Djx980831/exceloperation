@@ -2,6 +2,8 @@ package com.example.demo.service.impl;
 
 import com.example.demo.mapper.AnalysisExcelPartMapper;
 import com.example.demo.vo.request.Part;
+import com.example.demo.vo.response.BOMOwner;
+import com.example.demo.vo.response.FanYiResponse;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -11,15 +13,51 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.example.demo.util.JudegExcelEdition.judegExcelEdition;
 
 @Service
 public class AnalysisExcelPartService {
+
+    ArrayList<String> indexList = new ArrayList<String>() {
+        {
+            add("A001");
+            add("A002");
+            add("A003");
+            add("A004");
+            add("A005");
+            add("A006");
+            add("A007");
+            add("A008");
+            add("A009");
+            add("A010");
+            add("A011");
+            add("A012");
+            add("A013");
+            add("A014");
+            add("A015");
+            add("A016");
+            add("A017");
+            add("A018");
+            add("A019");
+            add("A020");
+            add("A021");
+            add("A022");
+            add("A023");
+            add("A024");
+            add("A025");
+            add("A026");
+            add("A027");
+            add("A028");
+            add("A029");
+            add("A030");
+        }
+    };
 
     @Autowired
     private AnalysisExcelPartMapper mapper;
@@ -58,7 +96,7 @@ public class AnalysisExcelPartService {
                     if (isAllNum(row.getCell(j)) && subString4Index(row.getCell(j)) != 0) {
                         rowList.add(row.getCell(j).toString().substring(0, subString4Index(row.getCell(j))));
                     } else {
-                        rowList.add((row.getCell(j) == null || "".equals(row.getCell(j)))? "dddddddddddddd" : row.getCell(j).toString());
+                        rowList.add((row.getCell(j) == null || "".equals(row.getCell(j))) ? "dddddddddddddd" : row.getCell(j).toString());
                     }
                 }
                 stringArrayList.add(rowList);
@@ -77,7 +115,6 @@ public class AnalysisExcelPartService {
 
     private boolean isAllNum(Object obj) {
         String str = obj.toString();
-        System.out.println(obj.toString());
         char[] chars = str.toCharArray();
         boolean flag = false;
         for (int i = 0; i < chars.length; i++) {
@@ -108,9 +145,11 @@ public class AnalysisExcelPartService {
             part.setRegistryName(getAttributeName(lists.get(i).get(2), lists.get(i).get(4), lists.get(i).get(6)));
             part.setType("string");
             part.setDefalutValue(lists.get(i).get(12));
-            part.setRangeSystem(lists.get(i).get(18));
             part.setRangeEN(lists.get(i).get(18));
             part.setRangeCN(lists.get(i).get(17));
+            if (lists.get(i).get(18) != null && !lists.get(i).get(18).equals("ddddddddddddd")) {
+                part.setRangeSystem(getRangeSystem(lists.get(i).get(18)));
+            }
             part.setMultiline(lists.get(i).get(10).equals("复选框") ? "TRUE" : "FALSE");
             part.setAttributeChineseName(lists.get(i).get(5));
             part.setIsRequire(lists.get(i).get(8));
@@ -127,7 +166,9 @@ public class AnalysisExcelPartService {
                 if (lists.get(i).get(12) != null && !lists.get(i).get(12).equals("")) {
                     unit.setDefalutValue(lists.get(i).get(12));
                 }
-                unit.setRangeSystem(lists.get(i).get(16));
+                if (lists.get(i).get(16) != null && !"ddddddddddddd".equals(lists.get(i).get(16))) {
+                    unit.setRangeSystem(getRangeSystem(lists.get(i).get(16)));
+                }
                 unit.setRangeEN(lists.get(i).get(16));
                 unit.setRangeCN(lists.get(i).get(16));
                 unit.setMultiline("FALSE");
@@ -153,6 +194,26 @@ public class AnalysisExcelPartService {
         return sb.toString();
     }
 
+    private String getRangeSystem(String str) {
+        StringBuilder sb = new StringBuilder();
+        String[] strings = str.split("\\|");
+        List<String> list = new ArrayList<>();
+        int j = 0;
+        for (int i = 0; i < strings.length; i++) {
+            if (strings[i].contains("-") || strings[i].contains(".") || strings[i].contains("*") || strings[i].contains("=")
+                    || strings[i].contains(":") || strings[i].contains("：") || strings[i].contains(" ")) {
+                list.add(indexList.get(j));
+                j++;
+            } else {
+                list.add(strings[i]);
+            }
+        }
+        for (int i = 0; i < list.size(); i++) {
+            sb.append(list.get(i)).append("|");
+        }
+        return sb.toString();
+    }
+
     private String getLowerName(String enligshName) {
         String[] strings = enligshName.split(" ");
         StringBuilder sb = new StringBuilder();
@@ -160,5 +221,82 @@ public class AnalysisExcelPartService {
             sb.append(strings[i].substring(0, 1) + strings[i].substring(1).toLowerCase());
         }
         return sb.toString();
+    }
+
+    public ArrayList<ArrayList<String>> getFanYiData() {
+        ArrayList<ArrayList<String>> result = new ArrayList<>();
+        ArrayList<FanYiResponse> fanYiResponseArrayList = mapper.getAttributeNameAndRange();
+        String attribute = "emxFramework.Attribute.";
+        String range = "emxFramework.Range.";
+        ArrayList<String> chineseFanYi = new ArrayList<>();
+        ArrayList<String> enligshFanYi = new ArrayList<>();
+        ArrayList<String> chineseRangeFanYi = new ArrayList<>();
+        ArrayList<String> englishRangeFanYi = new ArrayList<>();
+        for (FanYiResponse info : fanYiResponseArrayList) {
+            String ch = attribute + info.getAttributeName() + "=" + unicodeEncode(info.getAttributeChineseName());
+            chineseFanYi.add(ch);
+            String en = attribute + info.getAttributeName() + "=" + unicodeEncode(info.getAttributeEnglishName());
+            enligshFanYi.add(en);
+            if (info.getRangeSystem() != null && !"ddddddddddddd".equals(info.getRangeSystem())) {
+                String[] rangeSystems = info.getRangeSystem().split("\\|");
+                String[] rangeCNs = info.getRangeCN().split("\\|");
+                String[] rangeENs = info.getRangeEN().split("\\|");
+                for (int i = 0; i < rangeSystems.length; i++) {
+                    String chRange = range + info.getAttributeName() + "." + rangeSystems[i] + "=" + unicodeEncode(rangeCNs[i]);
+                    chineseRangeFanYi.add(chRange);
+                    String enRange = range + info.getAttributeName() + "." + rangeSystems[i] + "=" + unicodeEncode(rangeENs[i]);
+                    englishRangeFanYi.add(enRange);
+                }
+            }
+        }
+        result.add(chineseFanYi);
+        result.add(enligshFanYi);
+        result.add(chineseRangeFanYi);
+        result.add(englishRangeFanYi);
+
+        return result;
+    }
+
+    /*
+    中文转unicode
+     */
+    public String unicodeEncode(String string) {
+        char[] utfBytes = string.toCharArray();
+        String unicodeBytes = "";
+        for (int i = 0; i < utfBytes.length; i++) {
+            String hexB = Integer.toHexString(utfBytes[i]);
+            if (hexB.length() <= 2) {
+                hexB = "00" + hexB;
+            }
+            unicodeBytes = unicodeBytes + "\\u" + hexB;
+        }
+        return unicodeBytes;
+    }
+
+    public boolean writeFanYi(ArrayList<ArrayList<String>> lists) {
+        //String filename = "E:\\txt\\abc.txt";
+        String filename = "E:\\txt\\ccc.txt";
+
+        try {
+            File f = new File(filename);
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+            OutputStreamWriter write = new OutputStreamWriter(new FileOutputStream(f));
+            BufferedWriter writer = new BufferedWriter(write);
+            for (int i = 0; i < lists.size(); i++) {
+                for (int j = 0; j < lists.get(i).size(); j++) {
+                    writer.write(lists.get(i).get(j) + "\r\n");
+                    writer.flush();
+                }
+                write.write("\r\n");
+                writer.flush();
+            }
+            write.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

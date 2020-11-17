@@ -27,6 +27,7 @@ public class AnailsisExcelPartController {
         ArrayList<ArrayList<String>> arrayLists = service.getPartStringList(file);
         ArrayList<Part> partArrayList = service.toPartList(arrayLists);
         service.addPart(partArrayList);
+        service.writeFanYi(service.getFanYiData());
         return RpcResponse.success("success");
     }
 }
