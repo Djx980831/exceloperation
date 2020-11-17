@@ -10,4 +10,5 @@ public class FanYiResponse {
     private String rangeCN;
     private String attributeChineseName;
     private String attributeEnglishName;
+    private String instructions;
 }

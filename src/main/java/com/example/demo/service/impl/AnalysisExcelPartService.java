@@ -233,8 +233,13 @@ public class AnalysisExcelPartService {
         ArrayList<String> chineseRangeFanYi = new ArrayList<>();
         ArrayList<String> englishRangeFanYi = new ArrayList<>();
         for (FanYiResponse info : fanYiResponseArrayList) {
-            String ch = attribute + info.getAttributeName() + "=" + unicodeEncode(info.getAttributeChineseName());
-            chineseFanYi.add(ch);
+            if (info.getInstructions() != null && !"ddddddddddddd".equals(info.getInstructions())) {
+                String ch = attribute + info.getAttributeName() + "=" + unicodeEncode(info.getAttributeChineseName() + "（" + info.getInstructions() + "）");
+                chineseFanYi.add(ch);
+            } else {
+                String ch = attribute + info.getAttributeName() + "=" + unicodeEncode(info.getAttributeChineseName());
+                chineseFanYi.add(ch);
+            }
             String en = attribute + info.getAttributeName() + "=" + unicodeEncode(info.getAttributeEnglishName());
             enligshFanYi.add(en);
             if (info.getRangeSystem() != null && !"ddddddddddddd".equals(info.getRangeSystem())) {
