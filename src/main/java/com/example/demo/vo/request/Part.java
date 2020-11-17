@@ -9,7 +9,7 @@ public class Part {
     private String type;
     private String defalutValue;
     private String rangeSystem;
-    private String range;
+    private String rangeEN;
     private String rangeCN;
     private String multiline;
     private Integer maxLength;

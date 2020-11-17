@@ -44,7 +44,7 @@ public class AnalysisExcelPartService {
             //获取第工作表
             Sheet sheet = workbook.getSheetAt(0);
             //从第4行开始获取
-            for (int i = 3; i < sheet.getPhysicalNumberOfRows(); i++) {
+            for (int i = 2; i < sheet.getPhysicalNumberOfRows(); i++) {
                 //循环获取工作表的每一行
                 Row row = sheet.getRow(i);
                 if (null == row) {
@@ -55,7 +55,11 @@ public class AnalysisExcelPartService {
                 ArrayList<String> rowList = new ArrayList<>();
                 for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
                     //将每一个单元格的值装入列集合
-                    rowList.add((row.getCell(j) == null || "".equals(row.getCell(j)))? "dddddddddddddd" : row.getCell(j).toString());
+                    if (isAllNum(row.getCell(j)) && subString4Index(row.getCell(j)) != 0) {
+                        rowList.add(row.getCell(j).toString().substring(0, subString4Index(row.getCell(j))));
+                    } else {
+                        rowList.add((row.getCell(j) == null || "".equals(row.getCell(j)))? "dddddddddddddd" : row.getCell(j).toString());
+                    }
                 }
                 stringArrayList.add(rowList);
                 //关闭资源
@@ -71,6 +75,31 @@ public class AnalysisExcelPartService {
         return stringArrayList;
     }
 
+    private boolean isAllNum(Object obj) {
+        String str = obj.toString();
+        System.out.println(obj.toString());
+        char[] chars = str.toCharArray();
+        boolean flag = false;
+        for (int i = 0; i < chars.length; i++) {
+            if (chars[i] == '.' || Character.isDigit(chars[i])) {
+                flag = true;
+            } else {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    private int subString4Index(Object obj) {
+        String str = obj.toString();
+        if (str.contains(".")) {
+            int index = str.indexOf('.');
+            return index;
+        }
+        return 0;
+    }
+
     public ArrayList<Part> toPartList(ArrayList<ArrayList<String>> lists) {
         ArrayList<Part> reaultList = new ArrayList<>();
         for (int i = 0; i < lists.size(); i++) {
@@ -80,7 +109,7 @@ public class AnalysisExcelPartService {
             part.setType("string");
             part.setDefalutValue(lists.get(i).get(12));
             part.setRangeSystem(lists.get(i).get(18));
-            part.setRange(lists.get(i).get(18));
+            part.setRangeEN(lists.get(i).get(18));
             part.setRangeCN(lists.get(i).get(17));
             part.setMultiline(lists.get(i).get(10).equals("复选框") ? "TRUE" : "FALSE");
             part.setAttributeChineseName(lists.get(i).get(5));
@@ -95,8 +124,11 @@ public class AnalysisExcelPartService {
                 unit.setAttributeName(getAttributeName(lists.get(i).get(2), lists.get(i).get(4), lists.get(i).get(6)) + "_UNIT");
                 unit.setRegistryName(getAttributeName(lists.get(i).get(2), lists.get(i).get(4), lists.get(i).get(6)) + "_UNIT");
                 unit.setType("string");
+                if (lists.get(i).get(12) != null && !lists.get(i).get(12).equals("")) {
+                    unit.setDefalutValue(lists.get(i).get(12));
+                }
                 unit.setRangeSystem(lists.get(i).get(16));
-                unit.setRange(lists.get(i).get(16));
+                unit.setRangeEN(lists.get(i).get(16));
                 unit.setRangeCN(lists.get(i).get(16));
                 unit.setMultiline("FALSE");
                 unit.setAttributeChineseName(lists.get(i).get(5) + "单位");

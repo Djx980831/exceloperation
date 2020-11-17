@@ -3,12 +3,12 @@
 <mapper namespace="com.example.demo.mapper.AnalysisExcelPartMapper">
 
     <insert id="addPart" parameterType="com.example.demo.vo.request.Part">
-        insert into part (id, attributeName, registryName, type, default, rangeSystem, range, rangeCN, multiline, maxLength, attributeChineseName, isRequire,
+        insert into part (id, attributeName, registryName, type, defaultValue, rangeSystem, rangeEN, rangeCN, multilineValue, maxLength, attributeChineseName, isRequire,
         measureUnit, defaultUnit, classCode, attributeCode, instructions, attributeEnglishName) values
         <foreach collection="list" index="index" item="part" separator=",">
             (
             null, #{part.attributeName,jdbcType=VARCHAR}, #{part.registryName,jdbcType=VARCHAR}, #{part.type,jdbcType=VARCHAR}
-            , #{part.defalutValue,jdbcType=VARCHAR}, #{part.rangeSystem,jdbcType=VARCHAR}, #{part.range,jdbcType=VARCHAR}, #{part.rangeCN,jdbcType=VARCHAR}
+            , #{part.defalutValue,jdbcType=VARCHAR}, #{part.rangeSystem,jdbcType=VARCHAR}, #{part.rangeEN,jdbcType=VARCHAR}, #{part.rangeCN,jdbcType=VARCHAR}
             , #{part.multiline,jdbcType=VARCHAR}, #{part.maxLength,jdbcType=INTEGER}, #{part.attributeChineseName,jdbcType=VARCHAR}, #{part.isRequire,jdbcType=VARCHAR}
             , #{part.measureUnit,jdbcType=VARCHAR}, #{part.defaultUnit,jdbcType=VARCHAR}, #{part.classCode,jdbcType=VARCHAR}, #{part.attributeCode,jdbcType=VARCHAR}
             , #{part.instructions,jdbcType=VARCHAR}, #{part.attributeEnglishName,jdbcType=VARCHAR}
