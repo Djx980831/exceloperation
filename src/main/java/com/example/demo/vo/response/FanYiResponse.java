@@ -11,4 +11,6 @@ public class FanYiResponse {
     private String attributeChineseName;
     private String attributeEnglishName;
     private String instructions;
+    private String classCode;
+    private String isRequire;
 }

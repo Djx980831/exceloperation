@@ -4,6 +4,7 @@ import com.example.demo.mapper.AnalysisExcelPartMapper;
 import com.example.demo.vo.request.Part;
 import com.example.demo.vo.response.BOMOwner;
 import com.example.demo.vo.response.FanYiResponse;
+import com.example.demo.vo.response.SortReqResponse;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.example.demo.util.JudegExcelEdition.judegExcelEdition;
 
@@ -228,10 +230,13 @@ public class AnalysisExcelPartService {
         ArrayList<FanYiResponse> fanYiResponseArrayList = mapper.getAttributeNameAndRange();
         String attribute = "emxFramework.Attribute.";
         String range = "emxFramework.Range.";
+        String inter = "mod interface ";
+        String add_attribute = " add attribute ";
         ArrayList<String> chineseFanYi = new ArrayList<>();
         ArrayList<String> enligshFanYi = new ArrayList<>();
         ArrayList<String> chineseRangeFanYi = new ArrayList<>();
         ArrayList<String> englishRangeFanYi = new ArrayList<>();
+        ArrayList<String> interMql = new ArrayList<>();
         for (FanYiResponse info : fanYiResponseArrayList) {
             if (info.getInstructions() != null && !"ddddddddddddd".equals(info.getInstructions())) {
                 String ch = attribute + info.getAttributeName() + "=" + unicodeEncode(info.getAttributeChineseName() + "（" + info.getInstructions() + "）");
@@ -242,6 +247,8 @@ public class AnalysisExcelPartService {
             }
             String en = attribute + info.getAttributeName() + "=" + unicodeEncode(info.getAttributeEnglishName());
             enligshFanYi.add(en);
+            String in = inter + info.getClassCode() + add_attribute + info.getAttributeName() + ";";
+            interMql.add(in);
             if (info.getRangeSystem() != null && !"ddddddddddddd".equals(info.getRangeSystem())) {
                 String[] rangeSystems = info.getRangeSystem().split("\\|");
                 String[] rangeCNs = info.getRangeCN().split("\\|");
@@ -258,6 +265,7 @@ public class AnalysisExcelPartService {
         result.add(enligshFanYi);
         result.add(chineseRangeFanYi);
         result.add(englishRangeFanYi);
+        result.add(interMql);
 
         return result;
     }

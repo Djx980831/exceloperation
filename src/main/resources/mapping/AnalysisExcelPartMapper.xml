@@ -17,7 +17,7 @@
     </insert>
     
     <select id="getAttributeNameAndRange" resultType="com.example.demo.vo.response.FanYiResponse">
-        select attributeName, rangeSystem, rangeEN, rangeCN, attributeChineseName, attributeEnglishName, instructions
+        select attributeName, rangeSystem, rangeEN, rangeCN, attributeChineseName, attributeEnglishName, instructions, classCode, isRequire
         from part
     </select>
 </mapper>
