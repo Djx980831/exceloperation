@@ -12,7 +12,7 @@ public interface RestaurantMapper {
 
     ArrayList<Restaurant> getRestaurant();
 
-    ArrayList<String> getDish(Integer id);
+    ArrayList<Dish> getDish(Integer id);
 
     ArrayList<String> getPunishment();
 }
