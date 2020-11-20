@@ -62,9 +62,10 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         //控制放料的量
         HashMap<String, String> quantityHashMap = new HashMap<>();
-        quantityHashMap.put("0", "多");
-        quantityHashMap.put("1", "不放");
-        quantityHashMap.put("2", "少");
+        quantityHashMap.put("0", "多加");
+        quantityHashMap.put("1", "不加");
+        quantityHashMap.put("2", "正常");
+        quantityHashMap.put("3", "少加");
 
         int wyvDishIndex = RandomNumber.getRandomNumber(dishList.size());
         Dish wyvDish = dishList.get(wyvDishIndex);
@@ -89,7 +90,7 @@ public class RestaurantServiceImpl implements RestaurantService {
             djxDishReq = "到店视具体情况而定。";
         }
 
-        result.setPunisgment(getString(wyvDishReq, djxDishReq));
+        result.setPunishment(getString(wyvDishReq, djxDishReq));
         result.setRes(resName);
         result.setWyvDishName(wyvDishName);
         result.setDjxDishName(djxDishName);
