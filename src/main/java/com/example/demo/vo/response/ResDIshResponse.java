@@ -14,5 +14,5 @@ public class ResDIshResponse {
     private String res;
     private String wyvDishName;
     private String djxDishName;
-    private String punisgment;
+    private String punisment;
 }
