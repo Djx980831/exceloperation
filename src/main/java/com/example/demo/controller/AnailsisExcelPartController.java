@@ -36,7 +36,7 @@ public class AnailsisExcelPartController {
         if (null == file) {
             return RpcResponse.error(new ErrorInfo(101, "未上传文件"));
         }
-        service.writeSet(service.getPartStringSet(file));
+        service.writeSet(service.getLicStringList(file));
         return RpcResponse.success("success");
     }
 }

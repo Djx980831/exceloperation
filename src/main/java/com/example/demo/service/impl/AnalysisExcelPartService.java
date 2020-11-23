@@ -310,7 +310,7 @@ public class AnalysisExcelPartService {
         return false;
     }
 
-    public ArrayList<ArrayList<String>> getPartStringSet(MultipartFile file) {
+    public ArrayList<ArrayList<String>> getLicStringList(MultipartFile file) {
         ArrayList<ArrayList<String>> stringArrayList = new ArrayList<>();
         //获取文件名称
         String fileName = file.getOriginalFilename();
@@ -330,7 +330,7 @@ public class AnalysisExcelPartService {
             //获取第工作表
             Sheet sheet = workbook.getSheetAt(0);
             //从第4行开始获取
-            for (int i = 2; i < sheet.getPhysicalNumberOfRows(); i++) {
+            for (int i = 0; i < sheet.getPhysicalNumberOfRows(); i++) {
                 //循环获取工作表的每一行
                 Row row = sheet.getRow(i);
                 if (null == row) {
@@ -359,7 +359,9 @@ public class AnalysisExcelPartService {
 
     public boolean writeSet(ArrayList<ArrayList<String>> lists) {
         //String filename = "E:\\txt\\abc.txt";
-        String filename = "E:\\txt\\ddd.txt";
+        //String filename = "E:\\txt\\ddd.txt";
+
+        String filename = "/Users/apple/Desktop/ddd.txt";
         ArrayList<ArrayList<String>> arrayLists = getSortList(lists);
         try {
             File f = new File(filename);
@@ -408,25 +410,25 @@ public class AnalysisExcelPartService {
             };
             for (int j = 0; j < lists.get(i).size(); j++) {
                 if (lists.get(i).get(j).equals("IFW")) {
-                    strings.add(0, lists.get(i).get(j));
+                    strings.set(0, lists.get(i).get(j));
                 } else if (lists.get(i).get(j).equals("CSV")) {
-                    strings.add(1, lists.get(i).get(j));
+                    strings.set(1, lists.get(i).get(j));
                 } else if (lists.get(i).get(j).equals("PDE")) {
-                    strings.add(2, lists.get(i).get(j));
+                    strings.set(2, lists.get(i).get(j));
                 } else if (lists.get(i).get(j).equals("CCM")) {
-                    strings.add(3, lists.get(i).get(j));
+                    strings.set(3, lists.get(i).get(j));
                 } else if (lists.get(i).get(j).equals("PDM")) {
-                    strings.add(4, lists.get(i).get(j));
+                    strings.set(4, lists.get(i).get(j));
                 } else if (lists.get(i).get(j).equals("CDR")) {
-                    strings.add(5, lists.get(i).get(j));
+                    strings.set(5, lists.get(i).get(j));
                 } else if (lists.get(i).get(j).equals("DEP")) {
-                    strings.add(6, lists.get(i).get(j));
+                    strings.set(6, lists.get(i).get(j));
                 } else if (lists.get(i).get(j).equals("EME")) {
-                    strings.add(7, lists.get(i).get(j));
+                    strings.set(7, lists.get(i).get(j));
                 } else if (lists.get(i).get(j).equals("TXO")) {
-                    strings.add(8, lists.get(i).get(j));
+                    strings.set(8, lists.get(i).get(j));
                 } else {
-                    strings.add(9, lists.get(i).get(j));
+                    strings.set(9, lists.get(i).get(j));
                 }
             }
             result.add(strings);
