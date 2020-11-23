@@ -30,4 +30,13 @@ public class AnailsisExcelPartController {
         service.writeFanYi(service.getFanYiData());
         return RpcResponse.success("success");
     }
+
+    @PostMapping("/dealLic")
+    public RpcResponse<String> dealLic(MultipartFile file) {
+        if (null == file) {
+            return RpcResponse.error(new ErrorInfo(101, "未上传文件"));
+        }
+        service.writeSet(service.getPartStringSet(file));
+        return RpcResponse.success("success");
+    }
 }

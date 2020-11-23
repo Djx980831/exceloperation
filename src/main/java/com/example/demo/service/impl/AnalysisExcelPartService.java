@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.example.demo.util.JudegExcelEdition.judegExcelEdition;
@@ -311,5 +308,129 @@ public class AnalysisExcelPartService {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public ArrayList<ArrayList<String>> getPartStringSet(MultipartFile file) {
+        ArrayList<ArrayList<String>> stringArrayList = new ArrayList<>();
+        //获取文件名称
+        String fileName = file.getOriginalFilename();
+        System.out.println(fileName);
+
+        try {
+            //获取输入流
+            InputStream in = file.getInputStream();
+            //判断excel版本
+            Workbook workbook = null;
+            if (judegExcelEdition(fileName)) {
+                workbook = new XSSFWorkbook(in);
+            } else {
+                workbook = new HSSFWorkbook(in);
+            }
+
+            //获取第工作表
+            Sheet sheet = workbook.getSheetAt(0);
+            //从第4行开始获取
+            for (int i = 2; i < sheet.getPhysicalNumberOfRows(); i++) {
+                //循环获取工作表的每一行
+                Row row = sheet.getRow(i);
+                if (null == row) {
+                    System.out.println("---------" + i);
+                    continue;
+                }
+                //循环获取每一列
+                ArrayList<String> rowList = new ArrayList<>();
+                for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                    //将每一个单元格的值装入列集合
+                    rowList.add(row.getCell(j).toString());
+                }
+                stringArrayList.add(rowList);
+                //关闭资源
+                workbook.close();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("===================未找到文件======================");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("===================上传失败======================");
+        }
+        return stringArrayList;
+    }
+
+    public boolean writeSet(ArrayList<ArrayList<String>> lists) {
+        //String filename = "E:\\txt\\abc.txt";
+        String filename = "E:\\txt\\ddd.txt";
+        ArrayList<ArrayList<String>> arrayLists = getSortList(lists);
+        try {
+            File f = new File(filename);
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+            OutputStreamWriter write = new OutputStreamWriter(new FileOutputStream(f));
+            BufferedWriter writer = new BufferedWriter(write);
+            for (int i = 0; i < arrayLists.size(); i++) {
+                for (int j = 0; j < arrayLists.get(i).size(); j++) {
+                    writer.write(arrayLists.get(i).get(j) + "@");
+                    writer.flush();
+                }
+                write.write("\r\n");
+                writer.flush();
+            }
+            write.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public ArrayList<ArrayList<String>> getSortList(ArrayList<ArrayList<String>> lists) {
+        ArrayList<ArrayList<String>> result = new ArrayList<>();
+        for (int i = 0; i < lists.size(); i++) {
+            ArrayList<String> strings = new ArrayList<String>() {
+                {
+                    add("A000");
+                    add("A000");
+                    add("A000");
+                    add("A000");
+                    add("A000");
+                    add("A000");
+                    add("A000");
+                    add("A000");
+                    add("A000");
+                    add("A000");
+                    add("A000");
+                    add("A000");
+                    add("A000");
+                    add("A000");
+                    add("A000");
+                }
+            };
+            for (int j = 0; j < lists.get(i).size(); j++) {
+                if (lists.get(i).get(j).equals("IFW")) {
+                    strings.add(0, lists.get(i).get(j));
+                } else if (lists.get(i).get(j).equals("CSV")) {
+                    strings.add(1, lists.get(i).get(j));
+                } else if (lists.get(i).get(j).equals("PDE")) {
+                    strings.add(2, lists.get(i).get(j));
+                } else if (lists.get(i).get(j).equals("CCM")) {
+                    strings.add(3, lists.get(i).get(j));
+                } else if (lists.get(i).get(j).equals("PDM")) {
+                    strings.add(4, lists.get(i).get(j));
+                } else if (lists.get(i).get(j).equals("CDR")) {
+                    strings.add(5, lists.get(i).get(j));
+                } else if (lists.get(i).get(j).equals("DEP")) {
+                    strings.add(6, lists.get(i).get(j));
+                } else if (lists.get(i).get(j).equals("EME")) {
+                    strings.add(7, lists.get(i).get(j));
+                } else if (lists.get(i).get(j).equals("TXO")) {
+                    strings.add(8, lists.get(i).get(j));
+                } else {
+                    strings.add(9, lists.get(i).get(j));
+                }
+            }
+            result.add(strings);
+        }
+        return result;
     }
 }
