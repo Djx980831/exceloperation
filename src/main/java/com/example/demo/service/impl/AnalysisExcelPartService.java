@@ -517,8 +517,8 @@ public class AnalysisExcelPartService {
             StringBuilder sbCN = new StringBuilder();
             StringBuilder sbEN = new StringBuilder();
             StringBuilder ra = new StringBuilder();
-            sbCN.append(str).append(attr.get(i)).append(" = ").append(unicodeEncode(cn.get(i)));
-            sbEN.append(str).append(attr.get(i)).append(" = ").append(unicodeEncode(en.get(i)));
+            sbCN.append(str).append(attr.get(i)).append(".").append(r.get(i)).append(" = ").append(unicodeEncode(cn.get(i)));
+            sbEN.append(str).append(attr.get(i)).append(".").append(r.get(i)).append(" = ").append(unicodeEncode(en.get(i)));
             ra.append(mql).append(attr.get(i)).append(ran).append(r.get(i)).append(";");
             cnFanYi.add(sbCN.toString());
             enFanYi.add(sbEN.toString());
