@@ -435,4 +435,99 @@ public class AnalysisExcelPartService {
         }
         return result;
     }
+
+    public ArrayList<ArrayList<String>> getRangeAndAttributeArrayList(MultipartFile file) {
+        ArrayList<ArrayList<String>> result = new ArrayList<>();
+        //获取文件名称
+        String fileName = file.getOriginalFilename();
+        System.out.println(fileName);
+
+        try {
+            //获取输入流
+            InputStream in = file.getInputStream();
+            //判断excel版本
+            Workbook workbook = null;
+            if (judegExcelEdition(fileName)) {
+                workbook = new XSSFWorkbook(in);
+            } else {
+                workbook = new HSSFWorkbook(in);
+            }
+
+            //获取第工作表
+            Sheet sheet = workbook.getSheetAt(0);
+            ArrayList<String> cn = new ArrayList<>();
+            ArrayList<String> en = new ArrayList<>();
+            ArrayList<String> range = new ArrayList<>();
+            ArrayList<String> attr = new ArrayList<>();
+            //从第4行开始获取
+            for (int i = 3; i < sheet.getPhysicalNumberOfRows(); i++) {
+                //循环获取工作表的每一行
+                Row row = sheet.getRow(i);
+                if (null == row) {
+                    System.out.println("---------" + i);
+                    continue;
+                }
+                //循环获取每一列
+                for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                    //将每一个单元格的值装入列集合
+                    if (j == 5) {
+                        cn.add(row.getCell(j).toString());
+                    }
+                    if (j == 6) {
+                        en.add(row.getCell(j).toString());
+                    }
+                    if (j == 7) {
+                        range.add(row.getCell(j).toString());
+                    }
+                    if (j == 9) {
+                        attr.add(row.getCell(j).toString());
+                    }
+                }
+                //关闭资源
+                workbook.close();
+            }
+            result.add(cn);
+            result.add(en);
+            result.add(range);
+            result.add(attr);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("===================未找到文件======================");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("===================上传失败======================");
+        }
+        return result;
+    }
+
+    public ArrayList<ArrayList<String>> getFanYiValue(ArrayList<ArrayList<String>> res) {
+        ArrayList<ArrayList<String>> result = new ArrayList<>();
+        ArrayList<String> cn = res.get(0);
+        ArrayList<String> en = res.get(1);
+        ArrayList<String> r = res.get(2);
+        ArrayList<String> attr = res.get(3);
+        String str = "emxFramework.Range.";
+        String mql = "modify attribute ";
+        String ran = " add range = ";
+
+        ArrayList<String> cnFanYi = new ArrayList<>();
+        ArrayList<String> enFanYi = new ArrayList<>();
+        ArrayList<String> range = new ArrayList<>();
+        for (int i = 0; i < attr.size(); i++) {
+            StringBuilder sbCN = new StringBuilder();
+            StringBuilder sbEN = new StringBuilder();
+            StringBuilder ra = new StringBuilder();
+            sbCN.append(str).append(attr.get(i)).append(" = ").append(unicodeEncode(cn.get(i)));
+            sbEN.append(str).append(attr.get(i)).append(" = ").append(unicodeEncode(en.get(i)));
+            ra.append(mql).append(attr.get(i)).append(ran).append(r.get(i)).append(";");
+            cnFanYi.add(sbCN.toString());
+            enFanYi.add(sbEN.toString());
+            range.add(ra.toString());
+        }
+        result.add(cnFanYi);
+        result.add(enFanYi);
+        result.add(range);
+
+        return result;
+    }
 }
