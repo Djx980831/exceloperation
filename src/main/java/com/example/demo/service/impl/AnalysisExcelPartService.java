@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -81,7 +82,7 @@ public class AnalysisExcelPartService {
             //获取第工作表
             Sheet sheet = workbook.getSheetAt(0);
             //从第4行开始获取
-            for (int i = 2; i < sheet.getPhysicalNumberOfRows(); i++) {
+            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
                 //循环获取工作表的每一行
                 Row row = sheet.getRow(i);
                 if (null == row) {
@@ -359,9 +360,9 @@ public class AnalysisExcelPartService {
 
     public boolean writeSet(ArrayList<ArrayList<String>> lists) {
         //String filename = "E:\\txt\\abc.txt";
-        //String filename = "E:\\txt\\ddd.txt";
+        String filename = "E:\\txt\\ddd.txt";
 
-        String filename = "/Users/apple/Desktop/ddd.txt";
+        //String filename = "/Users/apple/Desktop/ddd.txt";
         ArrayList<ArrayList<String>> arrayLists = getSortList(lists);
         try {
             File f = new File(filename);
