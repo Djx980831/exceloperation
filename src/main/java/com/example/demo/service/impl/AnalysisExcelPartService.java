@@ -14,10 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.example.demo.util.JudegExcelEdition.judegExcelEdition;
 
@@ -215,9 +213,20 @@ public class AnalysisExcelPartService {
     }
 
     private String getLowerName(String enligshName) {
-        String[] strings = enligshName.split(" ");
+        String regEx="[\n`~!@#$%^&*()\\\\+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）\\ ——+|{}【】‘；：”“’。， 、？]";
+        String aa = " ";
+        String str = enligshName.replaceAll(regEx, aa);
+        String[] strings = str.split(" ");
+        System.out.println(strings.length + "---" + Arrays.toString(strings));
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < strings.length; i++) {
+            if (strings[i].startsWith("1")) {
+                sb.append(strings[i].substring(0, 1) + strings[i].substring(1, 2) + strings[i].substring(2).toLowerCase());
+                return sb.toString();
+            }
+            if (strings[i].equals("")) {
+                continue;
+            }
             sb.append(strings[i].substring(0, 1) + strings[i].substring(1).toLowerCase());
         }
         return sb.toString();
@@ -236,7 +245,7 @@ public class AnalysisExcelPartService {
         ArrayList<String> englishRangeFanYi = new ArrayList<>();
         ArrayList<String> interMql = new ArrayList<>();
         for (FanYiResponse info : fanYiResponseArrayList) {
-            if (info.getInstructions() != null && !"ddddddddddddd".equals(info.getInstructions())) {
+            if (info.getInstructions() != null && !"".equals(info.getInstructions())) {
                 String ch = attribute + info.getAttributeName() + "=" + unicodeEncode(info.getAttributeChineseName() + "（" + info.getInstructions() + "）");
                 chineseFanYi.add(ch);
             } else {
