@@ -20,4 +20,8 @@
         select attributeName, rangeSystem, rangeEN, rangeCN, attributeChineseName, attributeEnglishName, instructions, classCode, isRequire
         from part
     </select>
+
+    <select id="truncateTable">
+        truncate table part
+    </select>
 </mapper>

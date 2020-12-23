@@ -11,4 +11,6 @@ public interface AnalysisExcelPartMapper {
     void addPart(ArrayList<Part> parts);
 
     ArrayList<FanYiResponse> getAttributeNameAndRange();
+
+    void truncateTable();
 }

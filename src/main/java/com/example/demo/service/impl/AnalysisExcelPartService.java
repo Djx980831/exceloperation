@@ -217,7 +217,6 @@ public class AnalysisExcelPartService {
         String aa = " ";
         String str = enligshName.replaceAll(regEx, aa);
         String[] strings = str.split(" ");
-        System.out.println(strings.length + "---" + Arrays.toString(strings));
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < strings.length; i++) {
             if (strings[i].startsWith("1")) {
@@ -539,5 +538,9 @@ public class AnalysisExcelPartService {
         result.add(range);
 
         return result;
+    }
+
+    public void truncateTable() {
+        mapper.truncateTable();
     }
 }

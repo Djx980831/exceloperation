@@ -24,6 +24,7 @@ public class AnailsisExcelPartController {
         if (null == file) {
             return RpcResponse.error(new ErrorInfo(101, "未上传文件"));
         }
+        service.truncateTable();
         ArrayList<ArrayList<String>> arrayLists = service.getPartStringList(file);
         ArrayList<Part> partArrayList = service.toPartList(arrayLists);
         service.addPart(partArrayList);
