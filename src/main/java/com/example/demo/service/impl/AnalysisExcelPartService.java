@@ -94,7 +94,7 @@ public class AnalysisExcelPartService {
                     if (isAllNum(row.getCell(j)) && subString4Index(row.getCell(j)) != 0) {
                         rowList.add(row.getCell(j).toString().substring(0, subString4Index(row.getCell(j))));
                     } else {
-                        rowList.add((row.getCell(j) == null || "".equals(row.getCell(j))) ? "dddddddddddddd" : row.getCell(j).toString());
+                        rowList.add((row.getCell(j) == null || "".equals(row.getCell(j))) ? "ddddddddddddd" : row.getCell(j).toString());
                     }
                 }
                 stringArrayList.add(rowList);
@@ -112,6 +112,9 @@ public class AnalysisExcelPartService {
     }
 
     private boolean isAllNum(Object obj) {
+        if (obj == null) {
+            return false;
+        }
         String str = obj.toString();
         char[] chars = str.toCharArray();
         boolean flag = false;
@@ -244,7 +247,7 @@ public class AnalysisExcelPartService {
         ArrayList<String> englishRangeFanYi = new ArrayList<>();
         ArrayList<String> interMql = new ArrayList<>();
         for (FanYiResponse info : fanYiResponseArrayList) {
-            if (info.getInstructions() != null && !"".equals(info.getInstructions())) {
+            if (info.getInstructions() != null && !"ddddddddddddd".equals(info.getInstructions())) {
                 String ch = attribute + info.getAttributeName() + "=" + unicodeEncode(info.getAttributeChineseName() + "（" + info.getInstructions() + "）");
                 chineseFanYi.add(ch);
             } else {
@@ -542,5 +545,61 @@ public class AnalysisExcelPartService {
 
     public void truncateTable() {
         mapper.truncateTable();
+    }
+
+    public ArrayList<ArrayList<String>> dealExcelForPartInfo(MultipartFile file) {
+        ArrayList<ArrayList<String>> stringArrayList = new ArrayList<>();
+        //获取文件名称
+        String fileName = file.getOriginalFilename();
+        System.out.println(fileName);
+
+        try {
+            //获取输入流
+            InputStream in = file.getInputStream();
+            //判断excel版本
+            Workbook workbook = null;
+            if (judegExcelEdition(fileName)) {
+                workbook = new XSSFWorkbook(in);
+            } else {
+                workbook = new HSSFWorkbook(in);
+            }
+
+            //获取第工作表
+            Sheet sheet = workbook.getSheetAt(0);
+            //从第4行开始获取
+            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+                //循环获取工作表的每一行
+                Row row = sheet.getRow(i);
+                if (null == row) {
+                    System.out.println("---------" + i);
+                    continue;
+                }
+                //循环获取每一列
+
+                ArrayList<String> rowList = new ArrayList<>();
+                for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                    //将每一个单元格的值装入列集合
+                    if (row.getCell(j) == null || row.getCell(j).equals("")) {
+                        rowList.add("ddddddddddddd");
+                        continue;
+                    }
+                    if (isAllNum(row.getCell(j)) && subString4Index(row.getCell(j)) != 0) {
+                        rowList.add(row.getCell(j).toString().substring(0, subString4Index(row.getCell(j))));
+                    } else {
+                        rowList.add(row.getCell(j).toString());
+                    }
+                }
+                stringArrayList.add(rowList);
+                //关闭资源
+                workbook.close();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("===================未找到文件======================");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("===================上传失败======================");
+        }
+        return stringArrayList;
     }
 }
