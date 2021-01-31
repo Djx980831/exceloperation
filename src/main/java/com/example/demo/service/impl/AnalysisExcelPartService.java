@@ -54,6 +54,82 @@ public class AnalysisExcelPartService {
             add("A028");
             add("A029");
             add("A030");
+            add("A031");
+            add("A032");
+            add("A033");
+            add("A034");
+            add("A035");
+            add("A036");
+            add("A037");
+            add("A038");
+            add("A039");
+            add("A040");
+            add("A041");
+            add("A042");
+            add("A043");
+            add("A044");
+            add("A045");
+            add("A046");
+            add("A047");
+            add("A048");
+            add("A049");
+            add("A050");
+            add("A051");
+            add("A052");
+            add("A053");
+            add("A054");
+            add("A055");
+            add("A056");
+            add("A057");
+            add("A058");
+            add("A059");
+            add("A060");
+            add("A061");
+            add("A062");
+            add("A063");
+            add("A064");
+            add("A065");
+            add("A066");
+            add("A067");
+            add("A068");
+            add("A069");
+            add("A070");
+            add("A071");
+            add("A072");
+            add("A073");
+            add("A074");
+            add("A075");
+            add("A076");
+            add("A077");
+            add("A078");
+            add("A079");
+            add("A080");
+            add("A081");
+            add("A082");
+            add("A083");
+            add("A084");
+            add("A085");
+            add("A086");
+            add("A087");
+            add("A088");
+            add("A089");
+            add("A090");
+            add("A091");
+            add("A092");
+            add("A093");
+            add("A094");
+            add("A095");
+            add("A096");
+            add("A097");
+            add("A098");
+            add("A099");
+            add("A100");
+            add("A101");
+            add("A102");
+            add("A103");
+            add("A104");
+            add("A105");
+            add("A106");
         }
     };
 
@@ -202,7 +278,7 @@ public class AnalysisExcelPartService {
         int j = 0;
         for (int i = 0; i < strings.length; i++) {
             if (strings[i].contains("-") || strings[i].contains(".") || strings[i].contains("*") || strings[i].contains("=")
-                    || strings[i].contains(":") || strings[i].contains("：") || strings[i].contains(" ")) {
+                    || strings[i].contains(":") || strings[i].contains("：") || strings[i].contains(" ") || strings[i].contains("/") || strings[i].contains("\\") || strings[i].contains(",")) {
                 list.add(indexList.get(j));
                 j++;
             } else {
