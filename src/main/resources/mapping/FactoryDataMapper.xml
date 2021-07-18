@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.FactoryInfoMapper">
+
+    <insert id="addFactoryInfo" parameterType="com.example.demo.vo.request.FactoryVO">
+        insert into factoryinfo values (null, #{country}, #{name}, #{kind})
+    </insert>
+
+    <select id="getInfoByCountryAndName" parameterType="string" resultType="com.example.demo.entity.FactoryInfo">
+        select * from factoryinfo where country = #{country} and name = #{name}
+    </select>
+
+    <update id="updateInfo" parameterType="com.example.demo.entity.FactoryInfo">
+        update factoryinfo set kind = #{kind} where id = #{id}
+    </update>
+</mapper>

@@ -7,18 +7,18 @@ spring:
     password: root
     url: jdbc:mysql://127.0.0.1:3306/dd?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false
     driver-class-name: com.mysql.jdbc.Driver
-#  redis:
-#    host: 8.129.41.202
-#    port: 6379
-#    password: root
-#    jedis:
-#      pool:
-#        max-active: 200  #连接池最大允许连接数
-#        max-wait: 600000  #连接池最大阻塞等待时间
-#        max-idle: 20     #连接池中最大的连接空闲数
-#        min-idle: 0      #连接池中最小的连接空闲数
-#        timeout: 600000   #连接超时时间
-#    database: 0
+  redis:
+    host: 8.129.41.202
+    port: 6379
+    password: root
+    jedis:
+      pool:
+        max-active: 200  #连接池最大允许连接数
+        max-wait: 600000  #连接池最大阻塞等待时间
+        max-idle: 20     #连接池中最大的连接空闲数
+        min-idle: 0      #连接池中最小的连接空闲数
+        timeout: 600000   #连接超时时间
+    database: 0
 
 mybatis:
   mapper-locations: classpath:mapping/*Mapper.xml
